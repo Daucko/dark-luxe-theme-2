@@ -17,6 +17,7 @@ export const CreateAssignment = () => {
   const [date, setDate] = useState<Date>();
   const [attachments, setAttachments] = useState<File[]>([]);
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [customSubject, setCustomSubject] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -40,6 +41,10 @@ export const CreateAssignment = () => {
       ...formData,
       subject: value,
     });
+    // Clear custom subject if switching back to predefined subjects
+    if (value !== "Other") {
+      setCustomSubject("");
+    }
   };
 
   const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,8 +71,11 @@ export const CreateAssignment = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Get the final subject value (either selected or custom)
+    const finalSubject = formData.subject === "Other" ? customSubject : formData.subject;
+
     // Validation
-    if (!formData.title || !formData.subject || !date || !formData.totalPoints) {
+    if (!formData.title || !finalSubject || !date || !formData.totalPoints) {
       toast.error("Missing required fields!", {
         description: "Please fill in all required fields.",
         icon: <XCircle className="h-5 w-5 text-red-500" />,
@@ -79,6 +87,7 @@ export const CreateAssignment = () => {
       // TODO: Implement actual API call to save assignment
       console.log("Creating assignment:", {
         ...formData,
+        subject: finalSubject,
         dueDate: date,
         attachments,
         videoFile,
@@ -183,8 +192,17 @@ export const CreateAssignment = () => {
                       <SelectItem value="Physics">Physics</SelectItem>
                       <SelectItem value="Biology">Biology</SelectItem>
                       <SelectItem value="Geography">Geography</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
+                  {formData.subject === "Other" && (
+                    <Input
+                      placeholder="Enter custom subject"
+                      value={customSubject}
+                      onChange={(e) => setCustomSubject(e.target.value)}
+                      required
+                    />
+                  )}
                 </div>
 
                 <div className="space-y-2">
