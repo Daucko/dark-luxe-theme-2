@@ -98,6 +98,10 @@ const TeacherDashboard = () => {
     navigate("/teacher/create-assignment");
   };
 
+  const handleUploadVideo = () => {
+    navigate("/teacher/upload-video");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -184,7 +188,7 @@ const TeacherDashboard = () => {
               <FileText className="mr-2 h-4 w-4" />
               Create Assignment
             </Button>
-            <Button variant="outline">
+            <Button onClick={handleUploadVideo} variant="outline">
               <Upload className="mr-2 h-4 w-4" />
               Upload Video
             </Button>
