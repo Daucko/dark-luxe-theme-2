@@ -11,6 +11,7 @@ import TeacherDashboard from "./pages/TeacherDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import CreateAssignment from "./pages/CreateAssignment";
 import UploadVideo from "./pages/UploadVideo";
+import GradeSubmissions from "./pages/GradeSubmissions";
 import NotFound from "./pages/NotFound";
 import HoverReceiver from "@/visual-edits/VisualEditsMessenger";
 

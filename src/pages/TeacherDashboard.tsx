@@ -102,6 +102,10 @@ const TeacherDashboard = () => {
     navigate("/teacher/upload-video");
   };
 
+  const handleGradeSubmissions = () => {
+    navigate("/teacher/grade-submissions");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -192,7 +196,7 @@ const TeacherDashboard = () => {
               <Upload className="mr-2 h-4 w-4" />
               Upload Video
             </Button>
-            <Button variant="outline">
+            <Button onClick={handleGradeSubmissions} variant="outline">
               <CheckCircle2 className="mr-2 h-4 w-4" />
               Grade Submissions
             </Button>
