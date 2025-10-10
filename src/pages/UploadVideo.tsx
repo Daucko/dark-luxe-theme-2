@@ -13,6 +13,7 @@ export const UploadVideo = () => {
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [customSubject, setCustomSubject] = useState("");
   
   const [formData, setFormData] = useState({
     title: "",
@@ -65,6 +66,14 @@ export const UploadVideo = () => {
     setThumbnailPreview(url);
   };
 
+  const handleSubjectChange = (value: string) => {
+    setFormData({ ...formData, subject: value });
+    // Clear custom subject if switching back to predefined subjects
+    if (value !== "Other") {
+      setCustomSubject("");
+    }
+  };
+
   const removeVideo = () => {
     if (videoPreview) {
       URL.revokeObjectURL(videoPreview);
@@ -84,6 +93,9 @@ export const UploadVideo = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Get the final subject value (either selected or custom)
+    const finalSubject = formData.subject === "Other" ? customSubject : formData.subject;
+
     // Validation
     if (!formData.title.trim()) {
       toast.error("Title is required", {
@@ -99,7 +111,7 @@ export const UploadVideo = () => {
       return;
     }
 
-    if (!formData.subject) {
+    if (!finalSubject) {
       toast.error("Subject is required", {
         icon: <XCircle className="h-5 w-5 text-red-500" />,
       });
@@ -113,7 +125,10 @@ export const UploadVideo = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // In a real app, you would upload to a server here
-      console.log("Uploading video:", formData);
+      console.log("Uploading video:", {
+        ...formData,
+        subject: finalSubject,
+      });
 
       toast.success("Video uploaded successfully!", {
         description: `"${formData.title}" is now available to students.`,
@@ -128,6 +143,7 @@ export const UploadVideo = () => {
         videoFile: null,
         thumbnailFile: null,
       });
+      setCustomSubject("");
       setVideoPreview(null);
       setThumbnailPreview(null);
 
@@ -286,9 +302,7 @@ export const UploadVideo = () => {
                   </Label>
                   <Select
                     value={formData.subject}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, subject: value })
-                    }
+                    onValueChange={handleSubjectChange}
                   >
                     <SelectTrigger id="subject">
                       <SelectValue placeholder="Select a subject" />
@@ -302,8 +316,17 @@ export const UploadVideo = () => {
                       <SelectItem value="chemistry">Chemistry</SelectItem>
                       <SelectItem value="biology">Biology</SelectItem>
                       <SelectItem value="computer-science">Computer Science</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
+                  {formData.subject === "Other" && (
+                    <Input
+                      placeholder="Enter custom subject"
+                      value={customSubject}
+                      onChange={(e) => setCustomSubject(e.target.value)}
+                      required
+                    />
+                  )}
                 </div>
               </CardContent>
             </Card>
