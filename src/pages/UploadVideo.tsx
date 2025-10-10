@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, Upload, Video, CheckCircle, XCircle, Play, X } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const UploadVideo = () => {
   const navigate = useNavigate();
@@ -166,15 +167,17 @@ export const UploadVideo = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/teacher/dashboard")}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/teacher/dashboard")}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+            <ThemeToggle />
+          </div>
           <h1 className="text-3xl font-bold">Upload Video</h1>
           <p className="text-muted-foreground mt-2">
             Upload educational videos for your students

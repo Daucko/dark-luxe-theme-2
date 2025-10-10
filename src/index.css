@@ -8,93 +8,105 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Neutral - White/Light Gray for main content areas */
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 215 20% 25%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 215 20% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 215 20% 25%;
 
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
+    /* Primary - Calming Medium-to-Dark Blue for backgrounds and structural elements */
+    --primary: 215 70% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    /* Secondary - Light Blue for subtle backgrounds */
+    --secondary: 215 50% 92%;
+    --secondary-foreground: 215 70% 30%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    /* Muted - Light Gray for reduced emphasis */
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 15% 50%;
 
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    /* Accent - Bright Orange for CTAs and submit buttons */
+    --accent: 25 95% 55%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --border: 215 20% 88%;
+    --input: 215 20% 88%;
+    --ring: 215 70% 45%;
 
     --radius: 0.75rem;
 
-    /* Gradient tokens */
-    --gradient-start: 25 95% 65%;
-    --gradient-middle: 320 85% 65%;
-    --gradient-end: 250 80% 65%;
+    /* Gradient tokens - Blue to Orange */
+    --gradient-start: 215 70% 50%;
+    --gradient-middle: 200 65% 55%;
+    --gradient-end: 25 95% 60%;
     
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 240 5.9% 10%;
+    /* Sidebar - Medium Blue */
+    --sidebar-background: 215 65% 40%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 215 80% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 70% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 50% 35%;
+    --sidebar-ring: 25 95% 55%;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    /* Neutral - Dark background with light text */
+    --background: 215 25% 12%;
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 8%;
+    --card: 215 20% 16%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 8%;
+    --popover: 215 20% 16%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
+    /* Primary - Lighter Blue for dark mode */
+    --primary: 215 75% 60%;
+    --primary-foreground: 215 25% 12%;
 
-    --secondary: 240 3.7% 15.9%;
+    /* Secondary - Darker Blue for subtle backgrounds */
+    --secondary: 215 30% 20%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Muted - Dark Gray for reduced emphasis */
+    --muted: 215 15% 22%;
+    --muted-foreground: 215 10% 65%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    /* Accent - Bright Orange for CTAs (slightly adjusted for dark mode) */
+    --accent: 25 95% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --border: 215 20% 25%;
+    --input: 215 20% 25%;
+    --ring: 215 75% 60%;
 
-    /* Gradient tokens - vibrant for dark mode */
-    --gradient-start: 25 95% 65%;
-    --gradient-middle: 320 85% 65%;
-    --gradient-end: 250 80% 65%;
+    /* Gradient tokens - Blue to Orange for dark mode */
+    --gradient-start: 215 70% 45%;
+    --gradient-middle: 200 65% 50%;
+    --gradient-end: 25 95% 55%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 240 4.9% 83.9%;
+    /* Sidebar - Darker Blue */
+    --sidebar-background: 215 30% 18%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 215 75% 60%;
+    --sidebar-primary-foreground: 215 25% 12%;
+    --sidebar-accent: 215 40% 30%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 215 25% 22%;
+    --sidebar-ring: 25 95% 60%;
   }
 }
 

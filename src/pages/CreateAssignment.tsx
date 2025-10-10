@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { toast } from "@/components/ui/sonner";
 import { ArrowLeft, Calendar as CalendarIcon, Upload, CheckCircle, XCircle, Video, FileText } from "lucide-react";
 import { format } from "date-fns";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const CreateAssignment = () => {
   const navigate = useNavigate();
@@ -116,20 +117,23 @@ export const CreateAssignment = () => {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/teacher/dashboard")}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Create Assignment</h1>
-              <p className="text-sm text-muted-foreground">
-                Add a new assignment for your students
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/teacher/dashboard")}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Create Assignment</h1>
+                <p className="text-sm text-muted-foreground">
+                  Add a new assignment for your students
+                </p>
+              </div>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>

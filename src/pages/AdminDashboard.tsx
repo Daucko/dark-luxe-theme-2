@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -65,6 +66,7 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Button variant="outline" size="sm">
               <Calendar className="mr-2 h-4 w-4" />
               Change Term

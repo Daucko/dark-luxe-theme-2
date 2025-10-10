@@ -12,6 +12,8 @@ import StudentDashboard from "./pages/StudentDashboard";
 import CreateAssignment from "./pages/CreateAssignment";
 import UploadVideo from "./pages/UploadVideo";
 import GradeSubmissions from "./pages/GradeSubmissions";
+import GradeAssignments from "./pages/GradeAssignments";
+import ViewStudents from "./pages/ViewStudents";
 import NotFound from "./pages/NotFound";
 import HoverReceiver from "@/visual-edits/VisualEditsMessenger";
 
@@ -32,6 +34,8 @@ const App = () => (
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
             <Route path="/teacher/create-assignment" element={<CreateAssignment />} />
             <Route path="/teacher/upload-video" element={<UploadVideo />} />
+            <Route path="/teacher/grade-assignments" element={<GradeAssignments />} />
+            <Route path="/teacher/view-students" element={<ViewStudents />} />
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

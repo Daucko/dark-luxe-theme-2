@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function StudentDashboard() {
   const [student] = useState({
@@ -170,7 +171,10 @@ export default function StudentDashboard() {
               <p className="text-sm text-muted-foreground">Class {student.class}</p>
             </div>
           </div>
-          <Button variant="outline">View Profile</Button>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Button variant="outline">View Profile</Button>
+          </div>
         </div>
       </header>
 

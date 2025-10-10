@@ -20,6 +20,7 @@ import {
   LogOut
 } from "lucide-react";
 import type { Assignment, Submission } from "@/types";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
@@ -103,7 +104,11 @@ const TeacherDashboard = () => {
   };
 
   const handleGradeSubmissions = () => {
-    navigate("/teacher/grade-submissions");
+    navigate("/teacher/grade-assignments");
+  };
+
+  const handleViewStudents = () => {
+    navigate("/teacher/view-students");
   };
 
   return (
@@ -118,6 +123,7 @@ const TeacherDashboard = () => {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout
@@ -200,7 +206,7 @@ const TeacherDashboard = () => {
               <CheckCircle2 className="mr-2 h-4 w-4" />
               Grade Submissions
             </Button>
-            <Button variant="outline">
+            <Button onClick={handleViewStudents} variant="outline">
               <Users className="mr-2 h-4 w-4" />
               View Students
             </Button>
