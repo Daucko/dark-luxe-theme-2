@@ -76,7 +76,7 @@ export default function AdminDashboard() {
               Logout
             </Button>
             <div className="flex items-center gap-2">
-              <Avatar>
+              <Avatar className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
                 <AvatarImage src="/placeholder.svg" />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
@@ -271,7 +271,7 @@ export default function AdminDashboard() {
                           <p className="text-lg font-semibold text-orange-500">{teacher.pendingGrading}</p>
                         </div>
                         <div className="flex items-end gap-2">
-                          <Button size="sm" variant="outline">View Profile</Button>
+                          <Button size="sm" variant="outline" onClick={() => navigate("/profile")}>View Profile</Button>
                           <Button size="sm" variant="outline">Contact</Button>
                         </div>
                       </div>

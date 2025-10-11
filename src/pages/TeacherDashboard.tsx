@@ -128,7 +128,7 @@ const TeacherDashboard = () => {
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
-            <Avatar>
+            <Avatar className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
               <AvatarImage src="/placeholder.svg" />
               <AvatarFallback>SJ</AvatarFallback>
             </Avatar>

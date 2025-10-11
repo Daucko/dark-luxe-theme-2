@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FileText, Video, Clock, CheckCircle, AlertCircle, Play, BookOpen, Upload, XCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { toast } from "@/components/ui/sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function StudentDashboard() {
+  const navigate = useNavigate();
   const [student] = useState({
     name: "John Doe",
     class: "10A",
@@ -163,7 +165,10 @@ export default function StudentDashboard() {
       <header className="border-b bg-card">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-lg">
+            <div 
+              className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-lg cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => navigate("/profile")}
+            >
               {student.name.charAt(0)}
             </div>
             <div>
@@ -173,7 +178,7 @@ export default function StudentDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Button variant="outline">View Profile</Button>
+            <Button variant="outline" onClick={() => navigate("/profile")}>View Profile</Button>
           </div>
         </div>
       </header>
