@@ -270,6 +270,22 @@ export default function AdminDashboard() {
                   <SelectItem value="2024-2025">2024-2025</SelectItem>
                   <SelectItem value="2025-2026">2025-2026</SelectItem>
                   <SelectItem value="2026-2027">2026-2027</SelectItem>
+                  <SelectItem value="2027-2028">2027-2028</SelectItem>
+                  <SelectItem value="2028-2029">2028-2029</SelectItem>
+                  <SelectItem value="2029-2030">2029-2030</SelectItem>
+                  <SelectItem value="2030-2031">2030-2031</SelectItem>
+                  <SelectItem value="2031-2032">2031-2032</SelectItem>
+                  <SelectItem value="2032-2033">2032-2033</SelectItem>
+                  <SelectItem value="2033-2034">2033-2034</SelectItem>
+                  <SelectItem value="2034-2035">2034-2035</SelectItem>
+                  <SelectItem value="2035-2036">2035-2036</SelectItem>
+                  <SelectItem value="2036-2037">2036-2037</SelectItem>
+                  <SelectItem value="2037-2038">2037-2038</SelectItem>
+                  <SelectItem value="2038-2039">2038-2039</SelectItem>
+                  <SelectItem value="2039-2040">2039-2040</SelectItem>
+                  <SelectItem value="2040-2041">2040-2041</SelectItem>
+                  <SelectItem value="2041-2042">2041-2042</SelectItem>
+                  <SelectItem value="2042-2043">2042-2043</SelectItem>
                 </SelectContent>
               </Select>
             </div>
