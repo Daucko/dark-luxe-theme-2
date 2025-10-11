@@ -54,6 +54,10 @@ export default function AdminDashboard() {
     navigate("/auth");
   };
 
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -76,12 +80,12 @@ export default function AdminDashboard() {
               Logout
             </Button>
             <div className="flex items-center gap-2">
-              <Avatar>
+              <Avatar className="cursor-pointer" onClick={handleProfileClick}>
                 <AvatarImage src="/placeholder.svg" />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium">Admin User</p>
+                <p className="text-sm font-medium cursor-pointer hover:underline" onClick={handleProfileClick}>Admin User</p>
                 <Badge variant="default">Administrator</Badge>
               </div>
             </div>
