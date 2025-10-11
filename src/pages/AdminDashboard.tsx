@@ -44,6 +44,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 export default function AdminDashboard() {
@@ -52,6 +53,15 @@ export default function AdminDashboard() {
   const [termDialogOpen, setTermDialogOpen] = useState(false);
   const [newYear, setNewYear] = useState(currentSession.year);
   const [newTerm, setNewTerm] = useState(currentSession.term);
+  
+  // Add Teacher Dialog State
+  const [addTeacherDialogOpen, setAddTeacherDialogOpen] = useState(false);
+  const [teacherForm, setTeacherForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    phone: '',
+  });
 
   // Mock data - will be fetched from Vercel PostgreSQL backend
   const stats = {
@@ -211,6 +221,31 @@ export default function AdminDashboard() {
     });
   };
 
+  const handleAddTeacher = () => {
+    setTeacherForm({ name: '', email: '', subject: '', phone: '' });
+    setAddTeacherDialogOpen(true);
+  };
+
+  const handleSaveTeacher = () => {
+    // Validate form
+    if (!teacherForm.name || !teacherForm.email || !teacherForm.subject) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Here you would typically send the data to your backend
+    console.log('Adding teacher:', teacherForm);
+
+    // Close dialog and show success message
+    setAddTeacherDialogOpen(false);
+    toast.success('Teacher added successfully', {
+      description: `${teacherForm.name} has been added to the system`,
+    });
+
+    // Reset form
+    setTeacherForm({ name: '', email: '', subject: '', phone: '' });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -308,6 +343,96 @@ export default function AdminDashboard() {
               Cancel
             </Button>
             <Button onClick={handleSaveSession}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Teacher Dialog */}
+      <Dialog open={addTeacherDialogOpen} onOpenChange={setAddTeacherDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New Teacher</DialogTitle>
+            <DialogDescription>
+              Enter the teacher's information to add them to the system
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="teacher-name">
+                Full Name <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="teacher-name"
+                placeholder="e.g., Dr. John Smith"
+                value={teacherForm.name}
+                onChange={(e) =>
+                  setTeacherForm({ ...teacherForm, name: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="teacher-email">
+                Email Address <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="teacher-email"
+                type="email"
+                placeholder="e.g., john.smith@school.edu"
+                value={teacherForm.email}
+                onChange={(e) =>
+                  setTeacherForm({ ...teacherForm, email: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="teacher-subject">
+                Subject <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={teacherForm.subject}
+                onValueChange={(value) =>
+                  setTeacherForm({ ...teacherForm, subject: value })
+                }
+              >
+                <SelectTrigger id="teacher-subject">
+                  <SelectValue placeholder="Select subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mathematics">Mathematics</SelectItem>
+                  <SelectItem value="Physics">Physics</SelectItem>
+                  <SelectItem value="Chemistry">Chemistry</SelectItem>
+                  <SelectItem value="Biology">Biology</SelectItem>
+                  <SelectItem value="English">English</SelectItem>
+                  <SelectItem value="History">History</SelectItem>
+                  <SelectItem value="Geography">Geography</SelectItem>
+                  <SelectItem value="Computer Science">Computer Science</SelectItem>
+                  <SelectItem value="Physical Education">Physical Education</SelectItem>
+                  <SelectItem value="Art">Art</SelectItem>
+                  <SelectItem value="Music">Music</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="teacher-phone">Phone Number (Optional)</Label>
+              <Input
+                id="teacher-phone"
+                type="tel"
+                placeholder="e.g., +1 (555) 123-4567"
+                value={teacherForm.phone}
+                onChange={(e) =>
+                  setTeacherForm({ ...teacherForm, phone: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setAddTeacherDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSaveTeacher}>Add Teacher</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -442,7 +567,7 @@ export default function AdminDashboard() {
             <CardDescription>Frequently used admin actions</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-4">
-            <Button>
+            <Button onClick={handleAddTeacher}>
               <Users className="mr-2 h-4 w-4" />
               Add Teacher
             </Button>
