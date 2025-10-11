@@ -28,10 +28,30 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [currentSession] = useState({ year: '2024-2025', term: 'FIRST' });
+  const [currentSession, setCurrentSession] = useState({ year: '2024-2025', term: 'FIRST' });
+  const [termDialogOpen, setTermDialogOpen] = useState(false);
+  const [newYear, setNewYear] = useState(currentSession.year);
+  const [newTerm, setNewTerm] = useState(currentSession.term);
 
   // Mock data - will be fetched from Vercel PostgreSQL backend
   const stats = {
@@ -177,6 +197,20 @@ export default function AdminDashboard() {
     navigate('/auth');
   };
 
+  const handleChangeTerm = () => {
+    setNewYear(currentSession.year);
+    setNewTerm(currentSession.term);
+    setTermDialogOpen(true);
+  };
+
+  const handleSaveSession = () => {
+    setCurrentSession({ year: newYear, term: newTerm });
+    setTermDialogOpen(false);
+    toast.success('Session updated successfully', {
+      description: `Now viewing ${newYear} - ${newTerm} term`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -190,7 +224,7 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleChangeTerm}>
               <Calendar className="mr-2 h-4 w-4" />
               Change Term
             </Button>
@@ -214,6 +248,53 @@ export default function AdminDashboard() {
           </div>
         </div>
       </header>
+
+      {/* Change Term Dialog */}
+      <Dialog open={termDialogOpen} onOpenChange={setTermDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Academic Session</DialogTitle>
+            <DialogDescription>
+              Select the academic year and term you want to view
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="year">Academic Year</Label>
+              <Select value={newYear} onValueChange={setNewYear}>
+                <SelectTrigger id="year">
+                  <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2023-2024">2023-2024</SelectItem>
+                  <SelectItem value="2024-2025">2024-2025</SelectItem>
+                  <SelectItem value="2025-2026">2025-2026</SelectItem>
+                  <SelectItem value="2026-2027">2026-2027</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="term">Term</Label>
+              <Select value={newTerm} onValueChange={setNewTerm}>
+                <SelectTrigger id="term">
+                  <SelectValue placeholder="Select term" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="FIRST">First Term</SelectItem>
+                  <SelectItem value="SECOND">Second Term</SelectItem>
+                  <SelectItem value="THIRD">Third Term</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTermDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveSession}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="p-6 space-y-6">
         {/* Analytics Overview */}
