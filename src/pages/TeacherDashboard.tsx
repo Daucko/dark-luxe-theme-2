@@ -111,6 +111,10 @@ const TeacherDashboard = () => {
     navigate("/teacher/view-students");
   };
 
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -133,7 +137,7 @@ const TeacherDashboard = () => {
               <AvatarFallback>SJ</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium text-foreground">{teacherName}</p>
+              <p className="font-medium text-foreground cursor-pointer hover:underline" onClick={handleProfileClick}>{teacherName}</p>
               <Badge variant="secondary">Teacher</Badge>
             </div>
           </div>

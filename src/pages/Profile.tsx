@@ -1,32 +1,50 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { User, Mail, Phone, MapPin, Calendar, Save, ArrowLeft, Camera, Lock, Bell, Shield } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Save,
+  ArrowLeft,
+  Camera,
+  Lock,
+  Bell,
+  Shield,
+} from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 
 export default function Profile() {
   const navigate = useNavigate();
-  
+
   // Mock user data - will be fetched from backend
   const [profile, setProfile] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main Street, City, State 12345",
-    dateOfBirth: "1995-06-15",
-    bio: "Passionate educator with 5 years of experience in mathematics and science.",
-    role: "TEACHER",
-    department: "Mathematics",
-    joinedDate: "2020-09-01"
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@example.com',
+    phone: '+1 (555) 123-4567',
+    address: '123 Main Street, City, State 12345',
+    dateOfBirth: '1995-06-15',
+    bio: 'Passionate educator with 5 years of experience in mathematics and science.',
+    role: 'TEACHER',
+    department: 'Mathematics',
+    joinedDate: '2020-09-01',
   });
 
   const [notifications, setNotifications] = useState({
@@ -34,35 +52,35 @@ export default function Profile() {
     pushNotifications: false,
     assignmentReminders: true,
     gradeUpdates: true,
-    systemUpdates: false
+    systemUpdates: false,
   });
 
   const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
 
   const [isEditing, setIsEditing] = useState(false);
 
   const handleProfileChange = (field: string, value: string) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
+    setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleNotificationChange = (field: string, value: boolean) => {
-    setNotifications(prev => ({ ...prev, [field]: value }));
+    setNotifications((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSaveProfile = () => {
     // Save profile logic - will connect to backend
-    console.log("Saving profile:", profile);
+    console.log('Saving profile:', profile);
     setIsEditing(false);
     // Show success toast/notification
   };
 
   const handleSaveNotifications = () => {
     // Save notification preferences - will connect to backend
-    console.log("Saving notifications:", notifications);
+    console.log('Saving notifications:', notifications);
     // Show success toast/notification
   };
 
@@ -70,17 +88,21 @@ export default function Profile() {
     e.preventDefault();
     // Password change logic - will connect to backend
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("Passwords do not match!");
+      alert('Passwords do not match!');
       return;
     }
-    console.log("Changing password");
-    setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    console.log('Changing password');
+    setPasswordData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
     // Show success toast/notification
   };
 
   const handleAvatarChange = () => {
     // Avatar upload logic
-    console.log("Upload avatar");
+    console.log('Upload avatar');
   };
 
   return (
@@ -113,7 +135,8 @@ export default function Profile() {
                 <Avatar className="h-32 w-32">
                   <AvatarImage src="/placeholder.svg" />
                   <AvatarFallback className="text-3xl">
-                    {profile.firstName[0]}{profile.lastName[0]}
+                    {profile.firstName[0]}
+                    {profile.lastName[0]}
                   </AvatarFallback>
                 </Avatar>
                 <Button
@@ -124,7 +147,7 @@ export default function Profile() {
                   <Camera className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="flex-1 text-center md:text-left space-y-2">
                 <div className="flex flex-col md:flex-row md:items-center gap-2">
                   <h2 className="text-3xl font-bold">
@@ -136,7 +159,11 @@ export default function Profile() {
                 </div>
                 <p className="text-muted-foreground">{profile.email}</p>
                 <p className="text-sm text-muted-foreground">
-                  {profile.department} • Joined {new Date(profile.joinedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  {profile.department} • Joined{' '}
+                  {new Date(profile.joinedDate).toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })}
                 </p>
               </div>
             </div>
@@ -167,13 +194,20 @@ export default function Profile() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>Update your personal details and bio</CardDescription>
+                    <CardDescription>
+                      Update your personal details and bio
+                    </CardDescription>
                   </div>
                   {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+                    <Button onClick={() => setIsEditing(true)}>
+                      Edit Profile
+                    </Button>
                   ) : (
                     <div className="flex gap-2">
-                      <Button variant="outline" onClick={() => setIsEditing(false)}>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsEditing(false)}
+                      >
                         Cancel
                       </Button>
                       <Button onClick={handleSaveProfile}>
@@ -194,7 +228,9 @@ export default function Profile() {
                     <Input
                       id="firstName"
                       value={profile.firstName}
-                      onChange={(e) => handleProfileChange("firstName", e.target.value)}
+                      onChange={(e) =>
+                        handleProfileChange('firstName', e.target.value)
+                      }
                       disabled={!isEditing}
                     />
                   </div>
@@ -207,7 +243,9 @@ export default function Profile() {
                     <Input
                       id="lastName"
                       value={profile.lastName}
-                      onChange={(e) => handleProfileChange("lastName", e.target.value)}
+                      onChange={(e) =>
+                        handleProfileChange('lastName', e.target.value)
+                      }
                       disabled={!isEditing}
                     />
                   </div>
@@ -221,7 +259,9 @@ export default function Profile() {
                       id="email"
                       type="email"
                       value={profile.email}
-                      onChange={(e) => handleProfileChange("email", e.target.value)}
+                      onChange={(e) =>
+                        handleProfileChange('email', e.target.value)
+                      }
                       disabled={!isEditing}
                     />
                   </div>
@@ -235,7 +275,9 @@ export default function Profile() {
                       id="phone"
                       type="tel"
                       value={profile.phone}
-                      onChange={(e) => handleProfileChange("phone", e.target.value)}
+                      onChange={(e) =>
+                        handleProfileChange('phone', e.target.value)
+                      }
                       disabled={!isEditing}
                     />
                   </div>
@@ -249,7 +291,9 @@ export default function Profile() {
                       id="dateOfBirth"
                       type="date"
                       value={profile.dateOfBirth}
-                      onChange={(e) => handleProfileChange("dateOfBirth", e.target.value)}
+                      onChange={(e) =>
+                        handleProfileChange('dateOfBirth', e.target.value)
+                      }
                       disabled={!isEditing}
                     />
                   </div>
@@ -262,7 +306,9 @@ export default function Profile() {
                     <Input
                       id="department"
                       value={profile.department}
-                      onChange={(e) => handleProfileChange("department", e.target.value)}
+                      onChange={(e) =>
+                        handleProfileChange('department', e.target.value)
+                      }
                       disabled={!isEditing}
                     />
                   </div>
@@ -276,7 +322,9 @@ export default function Profile() {
                   <Input
                     id="address"
                     value={profile.address}
-                    onChange={(e) => handleProfileChange("address", e.target.value)}
+                    onChange={(e) =>
+                      handleProfileChange('address', e.target.value)
+                    }
                     disabled={!isEditing}
                   />
                 </div>
@@ -286,7 +334,7 @@ export default function Profile() {
                   <Textarea
                     id="bio"
                     value={profile.bio}
-                    onChange={(e) => handleProfileChange("bio", e.target.value)}
+                    onChange={(e) => handleProfileChange('bio', e.target.value)}
                     disabled={!isEditing}
                     rows={4}
                     placeholder="Tell us about yourself..."
@@ -301,7 +349,9 @@ export default function Profile() {
             <Card>
               <CardHeader>
                 <CardTitle>Change Password</CardTitle>
-                <CardDescription>Ensure your account is using a strong password</CardDescription>
+                <CardDescription>
+                  Ensure your account is using a strong password
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleChangePassword} className="space-y-4">
@@ -311,7 +361,12 @@ export default function Profile() {
                       id="currentPassword"
                       type="password"
                       value={passwordData.currentPassword}
-                      onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setPasswordData((prev) => ({
+                          ...prev,
+                          currentPassword: e.target.value,
+                        }))
+                      }
                       placeholder="Enter current password"
                       required
                     />
@@ -323,19 +378,31 @@ export default function Profile() {
                       id="newPassword"
                       type="password"
                       value={passwordData.newPassword}
-                      onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setPasswordData((prev) => ({
+                          ...prev,
+                          newPassword: e.target.value,
+                        }))
+                      }
                       placeholder="Enter new password"
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Label htmlFor="confirmPassword">
+                      Confirm New Password
+                    </Label>
                     <Input
                       id="confirmPassword"
                       type="password"
                       value={passwordData.confirmPassword}
-                      onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setPasswordData((prev) => ({
+                          ...prev,
+                          confirmPassword: e.target.value,
+                        }))
+                      }
                       placeholder="Confirm new password"
                       required
                     />
@@ -352,7 +419,9 @@ export default function Profile() {
             <Card>
               <CardHeader>
                 <CardTitle>Two-Factor Authentication</CardTitle>
-                <CardDescription>Add an extra layer of security to your account</CardDescription>
+                <CardDescription>
+                  Add an extra layer of security to your account
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
@@ -370,13 +439,17 @@ export default function Profile() {
             <Card>
               <CardHeader>
                 <CardTitle>Active Sessions</CardTitle>
-                <CardDescription>Manage your active login sessions</CardDescription>
+                <CardDescription>
+                  Manage your active login sessions
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <p className="font-medium">Current Session</p>
-                    <p className="text-sm text-muted-foreground">Windows • Chrome • Active now</p>
+                    <p className="text-sm text-muted-foreground">
+                      Windows • Chrome • Active now
+                    </p>
                   </div>
                   <Badge variant="default">Current</Badge>
                 </div>
@@ -392,12 +465,16 @@ export default function Profile() {
             <Card>
               <CardHeader>
                 <CardTitle>Notification Preferences</CardTitle>
-                <CardDescription>Manage how you receive notifications</CardDescription>
+                <CardDescription>
+                  Manage how you receive notifications
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="emailNotifications">Email Notifications</Label>
+                    <Label htmlFor="emailNotifications">
+                      Email Notifications
+                    </Label>
                     <p className="text-sm text-muted-foreground">
                       Receive notifications via email
                     </p>
@@ -405,13 +482,17 @@ export default function Profile() {
                   <Switch
                     id="emailNotifications"
                     checked={notifications.emailNotifications}
-                    onCheckedChange={(checked) => handleNotificationChange("emailNotifications", checked)}
+                    onCheckedChange={(checked) =>
+                      handleNotificationChange('emailNotifications', checked)
+                    }
                   />
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="pushNotifications">Push Notifications</Label>
+                    <Label htmlFor="pushNotifications">
+                      Push Notifications
+                    </Label>
                     <p className="text-sm text-muted-foreground">
                       Receive push notifications in your browser
                     </p>
@@ -419,13 +500,17 @@ export default function Profile() {
                   <Switch
                     id="pushNotifications"
                     checked={notifications.pushNotifications}
-                    onCheckedChange={(checked) => handleNotificationChange("pushNotifications", checked)}
+                    onCheckedChange={(checked) =>
+                      handleNotificationChange('pushNotifications', checked)
+                    }
                   />
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="assignmentReminders">Assignment Reminders</Label>
+                    <Label htmlFor="assignmentReminders">
+                      Assignment Reminders
+                    </Label>
                     <p className="text-sm text-muted-foreground">
                       Get reminders about upcoming assignment deadlines
                     </p>
@@ -433,7 +518,9 @@ export default function Profile() {
                   <Switch
                     id="assignmentReminders"
                     checked={notifications.assignmentReminders}
-                    onCheckedChange={(checked) => handleNotificationChange("assignmentReminders", checked)}
+                    onCheckedChange={(checked) =>
+                      handleNotificationChange('assignmentReminders', checked)
+                    }
                   />
                 </div>
 
@@ -447,7 +534,9 @@ export default function Profile() {
                   <Switch
                     id="gradeUpdates"
                     checked={notifications.gradeUpdates}
-                    onCheckedChange={(checked) => handleNotificationChange("gradeUpdates", checked)}
+                    onCheckedChange={(checked) =>
+                      handleNotificationChange('gradeUpdates', checked)
+                    }
                   />
                 </div>
 
@@ -461,11 +550,16 @@ export default function Profile() {
                   <Switch
                     id="systemUpdates"
                     checked={notifications.systemUpdates}
-                    onCheckedChange={(checked) => handleNotificationChange("systemUpdates", checked)}
+                    onCheckedChange={(checked) =>
+                      handleNotificationChange('systemUpdates', checked)
+                    }
                   />
                 </div>
 
-                <Button onClick={handleSaveNotifications} className="w-full md:w-auto">
+                <Button
+                  onClick={handleSaveNotifications}
+                  className="w-full md:w-auto"
+                >
                   <Save className="h-4 w-4 mr-2" />
                   Save Preferences
                 </Button>
@@ -475,13 +569,17 @@ export default function Profile() {
             <Card>
               <CardHeader>
                 <CardTitle>Email Digest</CardTitle>
-                <CardDescription>Choose how often you want to receive email summaries</CardDescription>
+                <CardDescription>
+                  Choose how often you want to receive email summaries
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Button variant="outline" className="h-auto py-4 flex-col">
                     <p className="font-semibold">Daily</p>
-                    <p className="text-xs text-muted-foreground">Every day at 9 AM</p>
+                    <p className="text-xs text-muted-foreground">
+                      Every day at 9 AM
+                    </p>
                   </Button>
                   <Button variant="default" className="h-auto py-4 flex-col">
                     <p className="font-semibold">Weekly</p>
@@ -489,7 +587,9 @@ export default function Profile() {
                   </Button>
                   <Button variant="outline" className="h-auto py-4 flex-col">
                     <p className="font-semibold">Never</p>
-                    <p className="text-xs text-muted-foreground">No email digest</p>
+                    <p className="text-xs text-muted-foreground">
+                      No email digest
+                    </p>
                   </Button>
                 </div>
               </CardContent>
