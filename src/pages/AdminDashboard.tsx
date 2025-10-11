@@ -335,7 +335,7 @@ export default function AdminDashboard() {
                 <SelectTrigger id="year">
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper">
                   <SelectItem value="2023-2024">2023-2024</SelectItem>
                   <SelectItem value="2024-2025">2024-2025</SelectItem>
                   <SelectItem value="2025-2026">2025-2026</SelectItem>
@@ -365,7 +365,7 @@ export default function AdminDashboard() {
                 <SelectTrigger id="term">
                   <SelectValue placeholder="Select term" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper">
                   <SelectItem value="FIRST">First Term</SelectItem>
                   <SelectItem value="SECOND">Second Term</SelectItem>
                   <SelectItem value="THIRD">Third Term</SelectItem>
@@ -432,7 +432,7 @@ export default function AdminDashboard() {
                 <SelectTrigger id="teacher-subject">
                   <SelectValue placeholder="Select subject" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper">
                   <SelectItem value="Mathematics">Mathematics</SelectItem>
                   <SelectItem value="Physics">Physics</SelectItem>
                   <SelectItem value="Chemistry">Chemistry</SelectItem>
