@@ -63,6 +63,16 @@ export default function AdminDashboard() {
     phone: '',
   });
 
+  // Add Student Dialog State
+  const [addStudentDialogOpen, setAddStudentDialogOpen] = useState(false);
+  const [studentForm, setStudentForm] = useState({
+    name: '',
+    email: '',
+    class: '',
+    parentName: '',
+    parentPhone: '',
+  });
+
   // Mock data - will be fetched from Vercel PostgreSQL backend
   const stats = {
     totalStudents: 450,
@@ -244,6 +254,31 @@ export default function AdminDashboard() {
 
     // Reset form
     setTeacherForm({ name: '', email: '', subject: '', phone: '' });
+  };
+
+  const handleAddStudent = () => {
+    setStudentForm({ name: '', email: '', class: '', parentName: '', parentPhone: '' });
+    setAddStudentDialogOpen(true);
+  };
+
+  const handleSaveStudent = () => {
+    // Validate form
+    if (!studentForm.name || !studentForm.class) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Here you would typically send the data to your backend
+    console.log('Adding student:', studentForm);
+
+    // Close dialog and show success message
+    setAddStudentDialogOpen(false);
+    toast.success('Student added successfully', {
+      description: `${studentForm.name} has been added to ${studentForm.class}`,
+    });
+
+    // Reset form
+    setStudentForm({ name: '', email: '', class: '', parentName: '', parentPhone: '' });
   };
 
   return (
@@ -437,6 +472,110 @@ export default function AdminDashboard() {
         </DialogContent>
       </Dialog>
 
+      {/* Add Student Dialog */}
+      <Dialog open={addStudentDialogOpen} onOpenChange={setAddStudentDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New Student</DialogTitle>
+            <DialogDescription>
+              Enter the student's information to add them to the system
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="student-name">
+                Full Name <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="student-name"
+                placeholder="e.g., John Doe"
+                value={studentForm.name}
+                onChange={(e) =>
+                  setStudentForm({ ...studentForm, name: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="student-email">Email Address</Label>
+              <Input
+                id="student-email"
+                type="email"
+                placeholder="e.g., john.doe@student.edu"
+                value={studentForm.email}
+                onChange={(e) =>
+                  setStudentForm({ ...studentForm, email: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="student-class">
+                Class <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={studentForm.class}
+                onValueChange={(value) =>
+                  setStudentForm({ ...studentForm, class: value })
+                }
+              >
+                <SelectTrigger id="student-class">
+                  <SelectValue placeholder="Select class" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Class 6A">Class 6A</SelectItem>
+                  <SelectItem value="Class 6B">Class 6B</SelectItem>
+                  <SelectItem value="Class 7A">Class 7A</SelectItem>
+                  <SelectItem value="Class 7B">Class 7B</SelectItem>
+                  <SelectItem value="Class 8A">Class 8A</SelectItem>
+                  <SelectItem value="Class 8B">Class 8B</SelectItem>
+                  <SelectItem value="Class 9A">Class 9A</SelectItem>
+                  <SelectItem value="Class 9B">Class 9B</SelectItem>
+                  <SelectItem value="Class 10A">Class 10A</SelectItem>
+                  <SelectItem value="Class 10B">Class 10B</SelectItem>
+                  <SelectItem value="Class 11A">Class 11A</SelectItem>
+                  <SelectItem value="Class 11B">Class 11B</SelectItem>
+                  <SelectItem value="Class 11C">Class 11C</SelectItem>
+                  <SelectItem value="Class 12A">Class 12A</SelectItem>
+                  <SelectItem value="Class 12B">Class 12B</SelectItem>
+                  <SelectItem value="Class 12C">Class 12C</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="parent-name">Parent/Guardian Name (Optional)</Label>
+              <Input
+                id="parent-name"
+                placeholder="e.g., Jane Doe"
+                value={studentForm.parentName}
+                onChange={(e) =>
+                  setStudentForm({ ...studentForm, parentName: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="parent-phone">Parent/Guardian Phone (Optional)</Label>
+              <Input
+                id="parent-phone"
+                type="tel"
+                placeholder="e.g., +1 (555) 123-4567"
+                value={studentForm.parentPhone}
+                onChange={(e) =>
+                  setStudentForm({ ...studentForm, parentPhone: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setAddStudentDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSaveStudent}>Add Student</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="p-6 space-y-6">
         {/* Analytics Overview */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -571,7 +710,7 @@ export default function AdminDashboard() {
               <Users className="mr-2 h-4 w-4" />
               Add Teacher
             </Button>
-            <Button variant="secondary">
+            <Button variant="secondary" onClick={handleAddStudent}>
               <GraduationCap className="mr-2 h-4 w-4" />
               Add Student
             </Button>
