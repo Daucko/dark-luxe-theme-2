@@ -520,7 +520,7 @@ export default function AdminDashboard() {
                 <SelectTrigger id="student-class">
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper">
                   <SelectItem value="Class 6A">Class 6A</SelectItem>
                   <SelectItem value="Class 6B">Class 6B</SelectItem>
                   <SelectItem value="Class 7A">Class 7A</SelectItem>
