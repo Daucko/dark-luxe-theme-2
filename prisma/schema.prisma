@@ -1,0 +1,206 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SubmissionStatus {
+  NOT_SUBMITTED
+  SUBMITTED
+  GRADED
+  LATE
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  password      String?  // Hashed password for email/password auth
+  googleId      String?  @unique // For Google OAuth
+  role          Role     @default(STUDENT)
+  avatar        String?
+  bio           String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  assignmentsCreated Assignment[]   @relation("TeacherAssignments")
+  submissions        Submission[]
+  grades             Grade[]        @relation("StudentGrades")
+  gradesGiven        Grade[]        @relation("TeacherGrades")
+  enrollments        Enrollment[]
+  notifications      Notification[]
+  videos             Video[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Assignment {
+  id           String           @id @default(cuid())
+  title        String
+  description  String
+  subject      String
+  instructions String?          @db.Text
+  totalPoints  Int
+  dueDate      DateTime
+  status       AssignmentStatus @default(PUBLISHED)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relations
+  teacherId    String
+  teacher      User             @relation("TeacherAssignments", fields: [teacherId], references: [id], onDelete: Cascade)
+  submissions  Submission[]
+  attachments  Attachment[]
+  videos       Video[]
+
+  @@index([teacherId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([subject])
+}
+
+model Submission {
+  id           String           @id @default(cuid())
+  status       SubmissionStatus @default(NOT_SUBMITTED)
+  submittedAt  DateTime?
+  content      String?          @db.Text
+  notes        String?          @db.Text
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relations
+  studentId    String
+  student      User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignmentId String
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  attachments  Attachment[]
+  grade        Grade?
+
+  @@unique([studentId, assignmentId])
+  @@index([studentId])
+  @@index([assignmentId])
+  @@index([status])
+}
+
+model Grade {
+  id           String   @id @default(cuid())
+  points       Float
+  feedback     String?  @db.Text
+  gradedAt     DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  submissionId String   @unique
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User     @relation("StudentGrades", fields: [studentId], references: [id], onDelete: Cascade)
+  gradedById   String
+  gradedBy     User     @relation("TeacherGrades", fields: [gradedById], references: [id])
+
+  @@index([studentId])
+  @@index([gradedById])
+}
+
+model Attachment {
+  id           String   @id @default(cuid())
+  fileName     String
+  fileUrl      String
+  fileSize     Int
+  fileType     String
+  uploadedAt   DateTime @default(now())
+
+  // Relations - can belong to either assignment or submission
+  assignmentId String?
+  assignment   Assignment? @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  submissionId String?
+  submission   Submission? @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([assignmentId])
+  @@index([submissionId])
+}
+
+model Video {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  videoUrl     String
+  thumbnailUrl String?
+  duration     Int?     // Duration in seconds
+  uploadedAt   DateTime @default(now())
+
+  // Relations
+  uploaderId   String
+  uploader     User       @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  assignmentId String?
+  assignment   Assignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+
+  @@index([uploaderId])
+  @@index([assignmentId])
+}
+
+model Enrollment {
+  id           String   @id @default(cuid())
+  enrolledAt   DateTime @default(now())
+
+  // Relations
+  studentId    String
+  student      User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  description String?  @db.Text
+  subject     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  enrollments Enrollment[]
+
+  @@index([subject])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String   @db.Text
+  type      String   // e.g., "ASSIGNMENT_CREATED", "GRADE_POSTED", "DUE_DATE_REMINDER"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
