@@ -14,6 +14,7 @@ import UploadVideo from "./pages/UploadVideo";
 import GradeSubmissions from "./pages/GradeSubmissions";
 import GradeAssignments from "./pages/GradeAssignments";
 import ViewStudents from "./pages/ViewStudents";
+import ViewAllAssignments from "./pages/ViewAllAssignments";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import HoverReceiver from "@/visual-edits/VisualEditsMessenger";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/teacher/grade-assignments" element={<GradeAssignments />} />
             <Route path="/teacher/view-students" element={<ViewStudents />} />
             <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route path="/assignments" element={<ViewAllAssignments />} />
             <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

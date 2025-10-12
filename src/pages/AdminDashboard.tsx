@@ -714,7 +714,7 @@ export default function AdminDashboard() {
               <GraduationCap className="mr-2 h-4 w-4" />
               Add Student
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => navigate("/assignments")}>
               <FileText className="mr-2 h-4 w-4" />
               View All Assignments
             </Button>
