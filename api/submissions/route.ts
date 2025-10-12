@@ -1,9 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'app/generated-prisma-client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 import jwt from 'jsonwebtoken';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const prisma = new PrismaClient().$extends(withAccelerate());
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 interface JWTPayload {
   userId: string;
@@ -100,10 +102,7 @@ async function handleGetSubmissions(
     }
 
     // Check permissions
-    if (
-      user.role === 'STUDENT' &&
-      submission.studentId !== user.userId
-    ) {
+    if (user.role === 'STUDENT' && submission.studentId !== user.userId) {
       return res.status(403).json({ error: 'Forbidden' });
     }
 
@@ -166,7 +165,9 @@ async function handleCreateSubmission(
   user: JWTPayload
 ) {
   if (user.role !== 'STUDENT') {
-    return res.status(403).json({ error: 'Forbidden: Only students can create submissions' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only students can create submissions' });
   }
 
   const { assignmentId, content, notes, attachments = [] } = req.body;
@@ -195,7 +196,9 @@ async function handleCreateSubmission(
   });
 
   if (existingSubmission) {
-    return res.status(400).json({ error: 'Submission already exists. Use PUT to update.' });
+    return res
+      .status(400)
+      .json({ error: 'Submission already exists. Use PUT to update.' });
   }
 
   // Determine if submission is late
@@ -254,7 +257,9 @@ async function handleUpdateSubmission(
 
   // Check permissions
   if (user.role === 'STUDENT' && existingSubmission.studentId !== user.userId) {
-    return res.status(403).json({ error: 'Forbidden: You can only update your own submissions' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: You can only update your own submissions' });
   }
 
   const { content, notes, status } = req.body;
@@ -313,11 +318,10 @@ async function handleDeleteSubmission(
   }
 
   // Check permissions
-  if (
-    user.role === 'STUDENT' &&
-    existingSubmission.studentId !== user.userId
-  ) {
-    return res.status(403).json({ error: 'Forbidden: You can only delete your own submissions' });
+  if (user.role === 'STUDENT' && existingSubmission.studentId !== user.userId) {
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: You can only delete your own submissions' });
   }
 
   await prisma.submission.delete({

@@ -1,9 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../app/generated/prisma-client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 import jwt from 'jsonwebtoken';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const prisma = new PrismaClient().$extends(withAccelerate());
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 interface JWTPayload {
   userId: string;
@@ -107,9 +109,10 @@ async function handleOverviewAnalytics(
   const grades = await prisma.grade.findMany({
     select: { points: true },
   });
-  const averageGrade = grades.length > 0
-    ? grades.reduce((sum, g) => sum + g.points, 0) / grades.length
-    : 0;
+  const averageGrade =
+    grades.length > 0
+      ? grades.reduce((sum, g) => sum + g.points, 0) / grades.length
+      : 0;
 
   return res.status(200).json({
     overview: {
@@ -131,7 +134,7 @@ async function handleStudentAnalytics(
   user: JWTPayload
 ) {
   const { studentId } = req.query;
-  const targetStudentId = studentId as string || user.userId;
+  const targetStudentId = (studentId as string) || user.userId;
 
   // Students can only view their own analytics
   if (user.role === 'STUDENT' && targetStudentId !== user.userId) {
@@ -222,16 +225,19 @@ async function handleStudentAnalytics(
   }
 
   // Calculate statistics
-  const averageGrade = grades.length > 0
-    ? grades.reduce((sum, g) => sum + g.points, 0) / grades.length
-    : 0;
+  const averageGrade =
+    grades.length > 0
+      ? grades.reduce((sum, g) => sum + g.points, 0) / grades.length
+      : 0;
 
-  const averagePercentage = grades.length > 0
-    ? grades.reduce((sum, g) => {
-        const percentage = (g.points / g.submission.assignment.totalPoints) * 100;
-        return sum + percentage;
-      }, 0) / grades.length
-    : 0;
+  const averagePercentage =
+    grades.length > 0
+      ? grades.reduce((sum, g) => {
+          const percentage =
+            (g.points / g.submission.assignment.totalPoints) * 100;
+          return sum + percentage;
+        }, 0) / grades.length
+      : 0;
 
   // Grade distribution by subject
   const gradesBySubject = grades.reduce((acc: any, grade) => {
@@ -245,11 +251,13 @@ async function handleStudentAnalytics(
     return acc;
   }, {});
 
-  const subjectPerformance = Object.entries(gradesBySubject).map(([subject, data]: [string, any]) => ({
-    subject,
-    average: data.total / data.count,
-    count: data.count,
-  }));
+  const subjectPerformance = Object.entries(gradesBySubject).map(
+    ([subject, data]: [string, any]) => ({
+      subject,
+      average: data.total / data.count,
+      count: data.count,
+    })
+  );
 
   return res.status(200).json({
     student,
@@ -273,7 +281,7 @@ async function handleTeacherAnalytics(
   user: JWTPayload
 ) {
   const { teacherId } = req.query;
-  const targetTeacherId = teacherId as string || user.userId;
+  const targetTeacherId = (teacherId as string) || user.userId;
 
   // Teachers can only view their own analytics (unless admin)
   if (user.role === 'TEACHER' && targetTeacherId !== user.userId) {
@@ -281,7 +289,9 @@ async function handleTeacherAnalytics(
   }
 
   if (user.role === 'STUDENT') {
-    return res.status(403).json({ error: 'Forbidden: Teacher or Admin access required' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Teacher or Admin access required' });
   }
 
   const [
@@ -410,34 +420,31 @@ async function handleAssignmentAnalytics(
   }
 
   // Check permissions
-  if (
-    user.role === 'TEACHER' &&
-    assignment.teacherId !== user.userId
-  ) {
+  if (user.role === 'TEACHER' && assignment.teacherId !== user.userId) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
   const totalSubmissions = assignment.submissions.filter(
-    s => s.status !== 'NOT_SUBMITTED'
+    (s) => s.status !== 'NOT_SUBMITTED'
   ).length;
   const gradedSubmissions = assignment.submissions.filter(
-    s => s.status === 'GRADED'
+    (s) => s.status === 'GRADED'
   ).length;
   const lateSubmissions = assignment.submissions.filter(
-    s => s.status === 'LATE'
+    (s) => s.status === 'LATE'
   ).length;
 
   const grades = assignment.submissions
-    .filter(s => s.grade)
-    .map(s => s.grade!);
+    .filter((s) => s.grade)
+    .map((s) => s.grade!);
 
-  const averageGrade = grades.length > 0
-    ? grades.reduce((sum, g) => sum + g.points, 0) / grades.length
-    : 0;
+  const averageGrade =
+    grades.length > 0
+      ? grades.reduce((sum, g) => sum + g.points, 0) / grades.length
+      : 0;
 
-  const averagePercentage = grades.length > 0
-    ? (averageGrade / assignment.totalPoints) * 100
-    : 0;
+  const averagePercentage =
+    grades.length > 0 ? (averageGrade / assignment.totalPoints) * 100 : 0;
 
   return res.status(200).json({
     assignment: {

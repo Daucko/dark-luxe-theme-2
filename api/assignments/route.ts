@@ -1,9 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'app/generated-prisma-client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 import jwt from 'jsonwebtoken';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const prisma = new PrismaClient().$extends(withAccelerate());
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 interface JWTPayload {
   userId: string;
@@ -81,12 +83,15 @@ async function handleGetAssignments(
         },
         attachments: true,
         videos: true,
-        submissions: user.role === 'STUDENT' ? {
-          where: { studentId: user.userId },
-          include: {
-            grade: true,
-          },
-        } : true,
+        submissions:
+          user.role === 'STUDENT'
+            ? {
+                where: { studentId: user.userId },
+                include: {
+                  grade: true,
+                },
+              }
+            : true,
       },
     });
 
@@ -145,7 +150,9 @@ async function handleCreateAssignment(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can create assignments' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can create assignments' });
   }
 
   const {
@@ -206,7 +213,9 @@ async function handleUpdateAssignment(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can update assignments' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can update assignments' });
   }
 
   const { id } = req.query;
@@ -224,7 +233,9 @@ async function handleUpdateAssignment(
   }
 
   if (existingAssignment.teacherId !== user.userId && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: You can only update your own assignments' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: You can only update your own assignments' });
   }
 
   const {
@@ -270,7 +281,9 @@ async function handleDeleteAssignment(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can delete assignments' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can delete assignments' });
   }
 
   const { id } = req.query;
@@ -288,7 +301,9 @@ async function handleDeleteAssignment(
   }
 
   if (existingAssignment.teacherId !== user.userId && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: You can only delete your own assignments' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: You can only delete your own assignments' });
   }
 
   await prisma.assignment.delete({

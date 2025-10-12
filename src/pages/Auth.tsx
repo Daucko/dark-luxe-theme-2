@@ -22,10 +22,16 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
   const [role, setRole] = useState<'STUDENT' | 'ADMIN' | 'TEACHER'>('STUDENT');
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('Form submitted');
+
     e.preventDefault();
+
+    console.log(e);
+
     if (isSignUp && password !== confirmPassword) {
       toast({
         title: 'Error',
@@ -34,14 +40,17 @@ const Auth = () => {
       });
       return;
     }
+    console.log('Form submitted cp 2');
+
     try {
       const endpoint = `/api/auth?action=${isSignUp ? 'register' : 'login'}`;
       const payload = isSignUp
-        ? { email, password, name: email.split('@')[0], role }
+        ? { email, password, name, role }
         : { email, password };
       const response = await axios.post(endpoint, payload);
       const data = response.data;
-      localStorage.setItem('token', data.token);
+      console.log(data);
+
       const userRole = data.user?.role || role;
       if (userRole === 'ADMIN') {
         navigate('/admin/dashboard');
@@ -169,6 +178,19 @@ const Auth = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input

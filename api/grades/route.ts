@@ -1,9 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'app/generated-prisma-client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 import jwt from 'jsonwebtoken';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const prisma = new PrismaClient().$extends(withAccelerate());
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 interface JWTPayload {
   userId: string;
@@ -174,7 +176,9 @@ async function handleCreateGrade(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can create grades' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can create grades' });
   }
 
   const { submissionId, points, feedback } = req.body;
@@ -197,7 +201,9 @@ async function handleCreateGrade(
   }
 
   if (submission.grade) {
-    return res.status(400).json({ error: 'Grade already exists. Use PUT to update.' });
+    return res
+      .status(400)
+      .json({ error: 'Grade already exists. Use PUT to update.' });
   }
 
   // Validate points
@@ -255,7 +261,9 @@ async function handleUpdateGrade(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can update grades' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can update grades' });
   }
 
   const { id } = req.query;
@@ -284,7 +292,10 @@ async function handleUpdateGrade(
   // Validate points if provided
   if (points !== undefined) {
     const pointsNum = parseFloat(points);
-    if (pointsNum < 0 || pointsNum > existingGrade.submission.assignment.totalPoints) {
+    if (
+      pointsNum < 0 ||
+      pointsNum > existingGrade.submission.assignment.totalPoints
+    ) {
       return res.status(400).json({
         error: `Points must be between 0 and ${existingGrade.submission.assignment.totalPoints}`,
       });
@@ -329,7 +340,9 @@ async function handleDeleteGrade(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can delete grades' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can delete grades' });
   }
 
   const { id } = req.query;

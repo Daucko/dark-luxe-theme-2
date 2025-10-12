@@ -1,12 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'app/generated-prisma-client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 import jwt from 'jsonwebtoken';
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const prisma = new PrismaClient().$extends(withAccelerate());
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 interface JWTPayload {
   userId: string;
@@ -81,7 +83,9 @@ async function handleAssignmentUpload(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can upload assignment files' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can upload assignment files' });
   }
 
   const { assignmentId } = req.query;
@@ -117,7 +121,9 @@ async function handleAssignmentUpload(
         return resolve(null);
       }
 
-      const uploadedFiles = Array.isArray(files.file) ? files.file : [files.file];
+      const uploadedFiles = Array.isArray(files.file)
+        ? files.file
+        : [files.file];
       const attachments: any[] = [];
 
       for (const file of uploadedFiles) {
@@ -126,7 +132,7 @@ async function handleAssignmentUpload(
         // In production, upload to cloud storage (S3, Cloudinary, etc.)
         // For now, we'll simulate the upload
         const fileUrl = `/uploads/${file.newFilename}`;
-        
+
         const attachment = await prisma.attachment.create({
           data: {
             fileName: file.originalFilename || file.newFilename,
@@ -152,7 +158,9 @@ async function handleSubmissionUpload(
   user: JWTPayload
 ) {
   if (user.role !== 'STUDENT') {
-    return res.status(403).json({ error: 'Forbidden: Only students can upload submission files' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only students can upload submission files' });
   }
 
   const { submissionId } = req.query;
@@ -188,7 +196,9 @@ async function handleSubmissionUpload(
         return resolve(null);
       }
 
-      const uploadedFiles = Array.isArray(files.file) ? files.file : [files.file];
+      const uploadedFiles = Array.isArray(files.file)
+        ? files.file
+        : [files.file];
       const attachments: any[] = [];
 
       for (const file of uploadedFiles) {
@@ -196,7 +206,7 @@ async function handleSubmissionUpload(
 
         // In production, upload to cloud storage
         const fileUrl = `/uploads/${file.newFilename}`;
-        
+
         const attachment = await prisma.attachment.create({
           data: {
             fileName: file.originalFilename || file.newFilename,
@@ -222,7 +232,9 @@ async function handleVideoUpload(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can upload videos' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can upload videos' });
   }
 
   // Parse form data
@@ -239,8 +251,10 @@ async function handleVideoUpload(
         return resolve(null);
       }
 
-      const videoFile = Array.isArray(files.video) ? files.video[0] : files.video;
-      
+      const videoFile = Array.isArray(files.video)
+        ? files.video[0]
+        : files.video;
+
       if (!videoFile) {
         res.status(400).json({ error: 'No video file provided' });
         return resolve(null);
@@ -251,9 +265,15 @@ async function handleVideoUpload(
       const videoUrl = `/uploads/videos/${videoFile.newFilename}`;
       const thumbnailUrl = `/uploads/thumbnails/${videoFile.newFilename}.jpg`;
 
-      const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
-      const description = Array.isArray(fields.description) ? fields.description[0] : fields.description;
-      const assignmentId = Array.isArray(fields.assignmentId) ? fields.assignmentId[0] : fields.assignmentId;
+      const title = Array.isArray(fields.title)
+        ? fields.title[0]
+        : fields.title;
+      const description = Array.isArray(fields.description)
+        ? fields.description[0]
+        : fields.description;
+      const assignmentId = Array.isArray(fields.assignmentId)
+        ? fields.assignmentId[0]
+        : fields.assignmentId;
 
       const video = await prisma.video.create({
         data: {
@@ -301,8 +321,10 @@ async function handleAvatarUpload(
         return resolve(null);
       }
 
-      const avatarFile = Array.isArray(files.avatar) ? files.avatar[0] : files.avatar;
-      
+      const avatarFile = Array.isArray(files.avatar)
+        ? files.avatar[0]
+        : files.avatar;
+
       if (!avatarFile) {
         res.status(400).json({ error: 'No avatar file provided' });
         return resolve(null);

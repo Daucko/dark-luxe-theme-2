@@ -1,9 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'app/generated-prisma-client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 import jwt from 'jsonwebtoken';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const prisma = new PrismaClient().$extends(withAccelerate());
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 interface JWTPayload {
   userId: string;
@@ -142,17 +144,13 @@ async function handleCreateVideo(
   user: JWTPayload
 ) {
   if (user.role !== 'TEACHER' && user.role !== 'ADMIN') {
-    return res.status(403).json({ error: 'Forbidden: Only teachers can upload videos' });
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: Only teachers can upload videos' });
   }
 
-  const {
-    title,
-    description,
-    videoUrl,
-    thumbnailUrl,
-    duration,
-    assignmentId,
-  } = req.body;
+  const { title, description, videoUrl, thumbnailUrl, duration, assignmentId } =
+    req.body;
 
   if (!title || !videoUrl) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -219,21 +217,14 @@ async function handleUpdateVideo(
   }
 
   // Check permissions
-  if (
-    existingVideo.uploaderId !== user.userId &&
-    user.role !== 'ADMIN'
-  ) {
-    return res.status(403).json({ error: 'Forbidden: You can only update your own videos' });
+  if (existingVideo.uploaderId !== user.userId && user.role !== 'ADMIN') {
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: You can only update your own videos' });
   }
 
-  const {
-    title,
-    description,
-    videoUrl,
-    thumbnailUrl,
-    duration,
-    assignmentId,
-  } = req.body;
+  const { title, description, videoUrl, thumbnailUrl, duration, assignmentId } =
+    req.body;
 
   const video = await prisma.video.update({
     where: { id: id as string },
@@ -242,7 +233,9 @@ async function handleUpdateVideo(
       ...(description !== undefined && { description }),
       ...(videoUrl && { videoUrl }),
       ...(thumbnailUrl !== undefined && { thumbnailUrl }),
-      ...(duration !== undefined && { duration: duration ? parseInt(duration) : null }),
+      ...(duration !== undefined && {
+        duration: duration ? parseInt(duration) : null,
+      }),
       ...(assignmentId !== undefined && { assignmentId: assignmentId || null }),
     },
     include: {
@@ -285,11 +278,10 @@ async function handleDeleteVideo(
   }
 
   // Check permissions
-  if (
-    existingVideo.uploaderId !== user.userId &&
-    user.role !== 'ADMIN'
-  ) {
-    return res.status(403).json({ error: 'Forbidden: You can only delete your own videos' });
+  if (existingVideo.uploaderId !== user.userId && user.role !== 'ADMIN') {
+    return res
+      .status(403)
+      .json({ error: 'Forbidden: You can only delete your own videos' });
   }
 
   await prisma.video.delete({
