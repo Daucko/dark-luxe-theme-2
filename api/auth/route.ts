@@ -2,9 +2,11 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET =
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 interface RegisterBody {
   email: string;
@@ -57,6 +59,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 }
 
 async function handleRegister(req: VercelRequest, res: VercelResponse) {
+  // Setup nodemailer transporter (use environment variables for real credentials)
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER || 'your-email@gmail.com',
+      pass: process.env.EMAIL_PASS || 'your-email-password',
+    },
+  });
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -103,9 +113,43 @@ async function handleRegister(req: VercelRequest, res: VercelResponse) {
     { expiresIn: '7d' }
   );
 
+  // Set JWT as HTTP-only cookie
+  res.setHeader(
+    'Set-Cookie',
+    `token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}`
+  );
+
+  // Determine dashboard URL based on role
+  let dashboardUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}`;
+  if (user.role === 'ADMIN') {
+    dashboardUrl += '/admin/dashboard';
+  } else if (user.role === 'TEACHER') {
+    dashboardUrl += '/teacher/dashboard';
+  } else {
+    dashboardUrl += '/student/dashboard';
+  }
+
+  // Send welcome email
+  const mailOptions = {
+    from: process.env.EMAIL_USER || 'your-email@gmail.com',
+    to: user.email,
+    subject: 'Welcome to EduAssign!',
+    html: `
+      <h2>Welcome, ${user.name || user.email}!</h2>
+      <p>Your account has been created successfully. Click the button below to go to your dashboard:</p>
+      <a href="${dashboardUrl}" style="display:inline-block;padding:10px 20px;background:#6366f1;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">Go to Dashboard</a>
+      <p>If you did not sign up, please ignore this email.</p>
+    `,
+  };
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (err) {
+    console.error('Error sending welcome email:', err);
+    // Optionally, you can return a warning in the response
+  }
+
   return res.status(201).json({
     user,
-    token,
   });
 }
 
@@ -143,6 +187,12 @@ async function handleLogin(req: VercelRequest, res: VercelResponse) {
     { expiresIn: '7d' }
   );
 
+  // Set JWT as HTTP-only cookie
+  res.setHeader(
+    'Set-Cookie',
+    `token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}`
+  );
+
   return res.status(200).json({
     user: {
       id: user.id,
@@ -151,7 +201,6 @@ async function handleLogin(req: VercelRequest, res: VercelResponse) {
       role: user.role,
       avatar: user.avatar,
     },
-    token,
   });
 }
 

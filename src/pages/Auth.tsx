@@ -1,45 +1,96 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Mail } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
 
 const Auth = () => {
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<"STUDENT" | "ADMIN" | "TEACHER">("STUDENT");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState<'STUDENT' | 'ADMIN' | 'TEACHER'>('STUDENT');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Authentication logic will be handled by your Vercel PostgreSQL backend
-    console.log(isSignUp ? "Sign up" : "Sign in", { email, password, role });
-    
-    // Navigate to appropriate dashboard based on role
-    if (role === "ADMIN") {
-      navigate("/admin/dashboard");
-    } else if (role === "TEACHER") {
-      navigate("/teacher/dashboard");
-    } else {
-      navigate("/student/dashboard");
+    if (isSignUp && password !== confirmPassword) {
+      toast({
+        title: 'Error',
+        description: 'Passwords do not match',
+        variant: 'destructive',
+      });
+      return;
+    }
+    try {
+      const endpoint = `/api/auth?action=${isSignUp ? 'register' : 'login'}`;
+      const payload = isSignUp
+        ? { email, password, name: email.split('@')[0], role }
+        : { email, password };
+      const response = await axios.post(endpoint, payload);
+      const data = response.data;
+      localStorage.setItem('token', data.token);
+      const userRole = data.user?.role || role;
+      if (userRole === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else if (userRole === 'TEACHER') {
+        navigate('/teacher/dashboard');
+      } else {
+        navigate('/student/dashboard');
+      }
+    } catch (err: any) {
+      toast({
+        title: 'Error',
+        description: err?.response?.data?.error || 'Authentication failed',
+        variant: 'destructive',
+      });
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // Google authentication logic will be handled by your Vercel PostgreSQL backend
-    console.log("Google sign in");
-    // For demo, navigate based on selected role
-    if (role === "ADMIN") {
-      navigate("/admin/dashboard");
-    } else if (role === "TEACHER") {
-      navigate("/teacher/dashboard");
-    } else {
-      navigate("/student/dashboard");
+  const handleGoogleSignIn = async () => {
+    // This is a placeholder for Google OAuth integration
+    // You would typically use a Google OAuth library here to get user info
+    // For demo, we'll simulate a Google login
+    try {
+      const googleId = 'demo-google-id';
+      const googleName = email.split('@')[0];
+      const googleAvatar = 'https://ui-avatars.com/api/?name=' + googleName;
+      const response = await axios.post('/api/auth?action=google', {
+        googleId,
+        email,
+        name: googleName,
+        avatar: googleAvatar,
+        role,
+      });
+      const data = response.data;
+      localStorage.setItem('token', data.token);
+      const userRole = data.user?.role || role;
+      if (userRole === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else if (userRole === 'TEACHER') {
+        navigate('/teacher/dashboard');
+      } else {
+        navigate('/student/dashboard');
+      }
+    } catch (err: any) {
+      toast({
+        title: 'Error',
+        description:
+          err?.response?.data?.error || 'Google authentication failed',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -51,12 +102,12 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">
-            {isSignUp ? "Create an account" : "Welcome back"}
+            {isSignUp ? 'Create an account' : 'Welcome back'}
           </CardTitle>
           <CardDescription>
             {isSignUp
-              ? "Enter your details to create your account"
-              : "Enter your credentials to access your account"}
+              ? 'Enter your details to create your account'
+              : 'Enter your credentials to access your account'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -65,16 +116,16 @@ const Auth = () => {
             <div className="grid grid-cols-3 gap-2">
               <Button
                 type="button"
-                variant={role === "STUDENT" ? "default" : "outline"}
-                onClick={() => setRole("STUDENT")}
+                variant={role === 'STUDENT' ? 'default' : 'outline'}
+                onClick={() => setRole('STUDENT')}
                 className="w-full"
               >
                 Student
               </Button>
               <Button
                 type="button"
-                variant={role === "TEACHER" ? "default" : "outline"}
-                onClick={() => setRole("TEACHER")}
+                variant={role === 'TEACHER' ? 'default' : 'outline'}
+                onClick={() => setRole('TEACHER')}
                 className="w-full"
               >
                 Teacher
@@ -82,8 +133,8 @@ const Auth = () => {
               {!isSignUp && (
                 <Button
                   type="button"
-                  variant={role === "ADMIN" ? "default" : "outline"}
-                  onClick={() => setRole("ADMIN")}
+                  variant={role === 'ADMIN' ? 'default' : 'outline'}
+                  onClick={() => setRole('ADMIN')}
                   className="w-full"
                 >
                   Admin
@@ -98,7 +149,12 @@ const Auth = () => {
             onClick={handleGoogleSignIn}
           >
             <Mail className="mr-2 h-4 w-4" />
-            Continue with <span style={{ color: '#4285F4' }}>G</span><span style={{ color: '#EA4335' }}>o</span><span style={{ color: '#FBBC04' }}>o</span><span style={{ color: '#4285F4' }}>g</span><span style={{ color: '#34A853' }}>l</span><span style={{ color: '#EA4335' }}>e</span>
+            Continue with <span style={{ color: '#4285F4' }}>G</span>
+            <span style={{ color: '#EA4335' }}>o</span>
+            <span style={{ color: '#FBBC04' }}>o</span>
+            <span style={{ color: '#4285F4' }}>g</span>
+            <span style={{ color: '#34A853' }}>l</span>
+            <span style={{ color: '#EA4335' }}>e</span>
           </Button>
 
           <div className="relative">
@@ -152,7 +208,7 @@ const Auth = () => {
             )}
 
             <Button type="submit" className="w-full">
-              {isSignUp ? "Sign up" : "Sign in"}
+              {isSignUp ? 'Sign up' : 'Sign in'}
             </Button>
           </form>
 
@@ -163,7 +219,7 @@ const Auth = () => {
               className="text-primary hover:underline"
             >
               {isSignUp
-                ? "Already have an account? Sign in"
+                ? 'Already have an account? Sign in'
                 : "Don't have an account? Sign up"}
             </button>
           </div>
