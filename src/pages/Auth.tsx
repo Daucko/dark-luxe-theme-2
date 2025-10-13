@@ -49,15 +49,7 @@ const Auth = () => {
 
   // Centralized post-auth success handler
   const postAuthSuccess = (data: any) => {
-    const token = data?.token;
-    // Prefer HttpOnly cookies on the server; fall back to localStorage only if token is returned.
-    if (token) {
-      try {
-        localStorage.setItem('token', token);
-      } catch {
-        // ignore storage errors
-      }
-    }
+    // The backend sets an HTTP-only cookie, so we don't need to store the token client-side
     const serverRole = data?.user?.role as
       | 'ADMIN'
       | 'TEACHER'
@@ -115,7 +107,9 @@ const Auth = () => {
           }
         : { email: emailTrimmed, password: passwordTrimmed };
 
-      const response = await axios.post(endpoint, payload);
+      const response = await axios.post(endpoint, payload, {
+        withCredentials: true, // Ensure cookies are sent/received
+      });
       const data = response.data;
 
       postAuthSuccess(data);
@@ -170,6 +164,8 @@ const Auth = () => {
         name: googleName,
         avatar: googleAvatar,
         role,
+      }, {
+        withCredentials: true, // Ensure cookies are sent/received
       });
       const data = response.data;
 

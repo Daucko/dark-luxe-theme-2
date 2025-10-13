@@ -28,20 +28,10 @@ export const useAuth = (): UseAuthReturn => {
       setLoading(true);
       setError(null);
 
-      // Get token from localStorage
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
       // Fetch current user from API
+      // The HTTP-only cookie will be sent automatically with the request
       const response = await axios.get('/api/auth?action=me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        withCredentials: true, // Important: ensures cookies are sent with the request
       });
 
       setUser(response.data.user);
@@ -49,11 +39,6 @@ export const useAuth = (): UseAuthReturn => {
       console.error('Error fetching user:', err);
       setError(err.response?.data?.error || 'Failed to fetch user');
       setUser(null);
-      
-      // Clear invalid token
-      if (err.response?.status === 401) {
-        localStorage.removeItem('token');
-      }
     } finally {
       setLoading(false);
     }
