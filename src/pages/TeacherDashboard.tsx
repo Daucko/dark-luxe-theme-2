@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,10 +25,23 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
   
-  // Mock data - will be fetched from Vercel PostgreSQL backend
-  const teacherName = "Prof. Sarah Johnson";
-  const currentSession = "2023-2024";
+  // Redirect if not authenticated or not a teacher
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    } else if (!loading && user && user.role !== 'TEACHER') {
+      // Redirect to appropriate dashboard based on role
+      if (user.role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'STUDENT') {
+        navigate('/student/dashboard');
+      }
+    }
+  }, [user, loading, navigate]);
+  
+  const currentSession = "2024-2025";
   const currentTerm = "First Term";
   
   const stats = {
@@ -133,11 +147,16 @@ const TeacherDashboard = () => {
               Logout
             </Button>
             <Avatar className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
-              <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback>SJ</AvatarFallback>
+              {user?.avatar ? (
+                <AvatarImage src={user.avatar} />
+              ) : (
+                <AvatarFallback>{user?.name?.charAt(0) || user?.email?.charAt(0) || 'T'}</AvatarFallback>
+              )}
             </Avatar>
             <div>
-              <p className="font-medium text-foreground cursor-pointer hover:underline" onClick={handleProfileClick}>{teacherName}</p>
+              <p className="font-medium text-foreground cursor-pointer hover:underline" onClick={handleProfileClick}>
+                {user?.name || user?.email || 'Teacher'}
+              </p>
               <Badge variant="secondary">Teacher</Badge>
             </div>
           </div>

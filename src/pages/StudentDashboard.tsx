@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { FileText, Video, Clock, CheckCircle, AlertCircle, Play, BookOpen, Upload, XCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,11 +15,21 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
-  const [student] = useState({
-    name: "John Doe",
-    class: "10A",
-    profileImage: null,
-  });
+  const { user, loading } = useAuth();
+  
+  // Redirect if not authenticated or not a student
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    } else if (!loading && user && user.role !== 'STUDENT') {
+      // Redirect to appropriate dashboard based on role
+      if (user.role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'TEACHER') {
+        navigate('/teacher/dashboard');
+      }
+    }
+  }, [user, loading, navigate]);
 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<number | null>(null);
@@ -165,15 +176,24 @@ export default function StudentDashboard() {
       <header className="border-b bg-card">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <div 
-              className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-lg cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => navigate("/profile")}
-            >
-              {student.name.charAt(0)}
-            </div>
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.name || 'User'}
+                className="h-12 w-12 rounded-full cursor-pointer hover:opacity-80 transition-opacity object-cover"
+                onClick={() => navigate("/profile")}
+              />
+            ) : (
+              <div 
+                className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-lg cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => navigate("/profile")}
+              >
+                {user?.name?.charAt(0) || user?.email?.charAt(0) || 'S'}
+              </div>
+            )}
             <div>
-              <h1 className="text-2xl font-bold">Welcome back, {student.name}!</h1>
-              <p className="text-sm text-muted-foreground">Class {student.class}</p>
+              <h1 className="text-2xl font-bold">Welcome back, {user?.name || user?.email || 'Student'}!</h1>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Users,
   FileText,
@@ -49,7 +50,22 @@ import { toast } from 'sonner';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const [currentSession, setCurrentSession] = useState({ year: '2024-2025', term: 'FIRST' });
+  
+  // Redirect if not authenticated or not an admin
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    } else if (!loading && user && user.role !== 'ADMIN') {
+      // Redirect to appropriate dashboard based on role
+      if (user.role === 'TEACHER') {
+        navigate('/teacher/dashboard');
+      } else if (user.role === 'STUDENT') {
+        navigate('/student/dashboard');
+      }
+    }
+  }, [user, loading, navigate]);
   const [termDialogOpen, setTermDialogOpen] = useState(false);
   const [newYear, setNewYear] = useState(currentSession.year);
   const [newTerm, setNewTerm] = useState(currentSession.term);
@@ -307,11 +323,14 @@ export default function AdminDashboard() {
                 className="cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => navigate('/profile')}
               >
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>AD</AvatarFallback>
+                {user?.avatar ? (
+                  <AvatarImage src={user.avatar} />
+                ) : (
+                  <AvatarFallback>{user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}</AvatarFallback>
+                )}
               </Avatar>
               <div>
-                <p className="text-sm font-medium">Admin User</p>
+                <p className="text-sm font-medium">{user?.name || user?.email || 'Admin User'}</p>
                 <Badge variant="default">Administrator</Badge>
               </div>
             </div>
