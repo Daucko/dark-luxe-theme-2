@@ -1,17 +1,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PrismaClient } from '@prisma/client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 
-// Initialize Prisma Client without accelerate for local development
+// Initialize Prisma Client with Accelerate for Vercel deployment
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: process.env.DATABASE_URL,
+      url: process.env.PRISMA_DATABASE_URL || process.env.DATABASE_URL,
     },
   },
-});
+}).$extends(withAccelerate());
 
 const JWT_SECRET =
   process.env.JWT_SECRET || 'your-secret-key-change-in-production';
