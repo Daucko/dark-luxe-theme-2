@@ -24,13 +24,70 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState<'STUDENT' | 'ADMIN' | 'TEACHER'>('STUDENT');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Helper to route based on role
+  const routeByRole = (userRole: 'ADMIN' | 'TEACHER' | 'STUDENT') => {
+    if (userRole === 'ADMIN') {
+      navigate('/admin/dashboard');
+    } else if (userRole === 'TEACHER') {
+      navigate('/teacher/dashboard');
+    } else {
+      navigate('/student/dashboard');
+    }
+  };
+
+  // Extract a readable error message from various error shapes
+  const extractErrorMessage = (err: unknown) => {
+    if (axios.isAxiosError(err)) {
+      const data: any = err.response?.data;
+      if (typeof data?.error === 'string') return data.error;
+      if (typeof data?.message === 'string') return data.message;
+    }
+    return (err as any)?.message || 'Authentication failed';
+  };
+
+  // Centralized post-auth success handler
+  const postAuthSuccess = (data: any) => {
+    const token = data?.token;
+    // Prefer HttpOnly cookies on the server; fall back to localStorage only if token is returned.
+    if (token) {
+      try {
+        localStorage.setItem('token', token);
+      } catch {
+        // ignore storage errors
+      }
+    }
+    const serverRole = data?.user?.role as
+      | 'ADMIN'
+      | 'TEACHER'
+      | 'STUDENT'
+      | undefined;
+    if (!serverRole) {
+      toast({
+        title: 'Error',
+        description: 'Server did not return a role. Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Success',
+      description: isSignUp ? 'Account created' : 'Signed in successfully',
+    });
+
+    // Clear sensitive fields
+    setPassword('');
+    setConfirmPassword('');
+
+    routeByRole(serverRole);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('Form submitted');
-
     e.preventDefault();
 
-    console.log(e);
+    if (isSubmitting) return;
 
     if (isSignUp && password !== confirmPassword) {
       toast({
@@ -40,66 +97,96 @@ const Auth = () => {
       });
       return;
     }
-    console.log('Form submitted cp 2');
 
+    const emailTrimmed = email.trim();
+    const passwordTrimmed = password.trim();
+    const nameTrimmed = name.trim();
+
+    setIsSubmitting(true);
     try {
+      // TODO: Prefer using dedicated endpoints like /api/auth/login and /api/auth/register
       const endpoint = `/api/auth?action=${isSignUp ? 'register' : 'login'}`;
       const payload = isSignUp
-        ? { email, password, name, role }
-        : { email, password };
+        ? {
+            email: emailTrimmed,
+            password: passwordTrimmed,
+            name: nameTrimmed,
+            role,
+          }
+        : { email: emailTrimmed, password: passwordTrimmed };
+
       const response = await axios.post(endpoint, payload);
       const data = response.data;
-      console.log(data);
 
-      const userRole = data.user?.role || role;
-      if (userRole === 'ADMIN') {
-        navigate('/admin/dashboard');
-      } else if (userRole === 'TEACHER') {
-        navigate('/teacher/dashboard');
-      } else {
-        navigate('/student/dashboard');
+      postAuthSuccess(data);
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error('Auth error:', err);
       }
-    } catch (err: any) {
+      const errorMessage = extractErrorMessage(err);
       toast({
         title: 'Error',
-        description: err?.response?.data?.error || 'Authentication failed',
+        description: errorMessage,
         variant: 'destructive',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    // This is a placeholder for Google OAuth integration
-    // You would typically use a Google OAuth library here to get user info
-    // For demo, we'll simulate a Google login
+    // Guard placeholder behind development environment
+    if (!import.meta.env.DEV) {
+      toast({
+        title: 'Not configured',
+        description: 'Google sign-in is not configured for this environment.',
+      });
+      return;
+    }
+
+    if (isSubmitting) return;
+
+    const emailTrimmed = email.trim();
+    if (!emailTrimmed) {
+      toast({
+        title: 'Simulation requires email',
+        description: 'Enter an email to simulate Google login in development.',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       const googleId = 'demo-google-id';
-      const googleName = email.split('@')[0];
-      const googleAvatar = 'https://ui-avatars.com/api/?name=' + googleName;
+      const googleName = emailTrimmed.split('@')[0];
+      const googleAvatar =
+        'https://ui-avatars.com/api/?name=' + encodeURIComponent(googleName);
+
+      // TODO: Replace with real OAuth flow and a dedicated endpoint, e.g., /api/auth/google
       const response = await axios.post('/api/auth?action=google', {
         googleId,
-        email,
+        email: emailTrimmed,
         name: googleName,
         avatar: googleAvatar,
         role,
       });
       const data = response.data;
-      localStorage.setItem('token', data.token);
-      const userRole = data.user?.role || role;
-      if (userRole === 'ADMIN') {
-        navigate('/admin/dashboard');
-      } else if (userRole === 'TEACHER') {
-        navigate('/teacher/dashboard');
-      } else {
-        navigate('/student/dashboard');
+
+      postAuthSuccess(data);
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error('Google auth error:', err);
       }
-    } catch (err: any) {
+      const errorMessage = extractErrorMessage(err);
       toast({
         title: 'Error',
-        description:
-          err?.response?.data?.error || 'Google authentication failed',
+        description: errorMessage || 'Google authentication failed',
         variant: 'destructive',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -126,6 +213,8 @@ const Auth = () => {
               <Button
                 type="button"
                 variant={role === 'STUDENT' ? 'default' : 'outline'}
+                aria-pressed={role === 'STUDENT'}
+                disabled={isSubmitting}
                 onClick={() => setRole('STUDENT')}
                 className="w-full"
               >
@@ -134,6 +223,8 @@ const Auth = () => {
               <Button
                 type="button"
                 variant={role === 'TEACHER' ? 'default' : 'outline'}
+                aria-pressed={role === 'TEACHER'}
+                disabled={isSubmitting}
                 onClick={() => setRole('TEACHER')}
                 className="w-full"
               >
@@ -143,6 +234,8 @@ const Auth = () => {
                 <Button
                   type="button"
                   variant={role === 'ADMIN' ? 'default' : 'outline'}
+                  aria-pressed={role === 'ADMIN'}
+                  disabled={isSubmitting}
                   onClick={() => setRole('ADMIN')}
                   className="w-full"
                 >
@@ -156,6 +249,7 @@ const Auth = () => {
             variant="outline"
             className="w-full"
             onClick={handleGoogleSignIn}
+            disabled={isSubmitting}
           >
             <Mail className="mr-2 h-4 w-4" />
             Continue with <span style={{ color: '#4285F4' }}>G</span>
@@ -229,7 +323,7 @@ const Auth = () => {
               </div>
             )}
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSignUp ? 'Sign up' : 'Sign in'}
             </Button>
           </form>
