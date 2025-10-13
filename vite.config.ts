@@ -1,18 +1,19 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
-import { componentTaggerPlugin } from "./src/visual-edits/component-tagger-plugin.js";
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { componentTaggerPlugin } from './src/visual-edits/component-tagger-plugin.js';
 
 // Minimal plugin to log build-time and dev-time errors to console
 const logErrorsPlugin = () => ({
-  name: "log-errors-plugin",
+  name: 'log-errors-plugin',
   // Inject a small client-side script that mirrors Vite overlay errors to console
   transformIndexHtml() {
     return {
       tags: [
         {
-          tag: "script",
-          injectTo: "head",
+          tag: 'script',
+          injectTo: 'head',
           children: `(() => {
             try {
               const logOverlay = () => {
@@ -54,9 +55,9 @@ const logErrorsPlugin = () => ({
             } catch (e) {
               console.warn('[Vite Overlay logger failed]', e);
             }
-          })();`
-        }
-      ]
+          })();`,
+        },
+      ],
     };
   },
 });
@@ -64,8 +65,14 @@ const logErrorsPlugin = () => ({
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: '::',
     port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [
     react(),
@@ -74,7 +81,7 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 }));
