@@ -31,9 +31,16 @@ interface LoginBody {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS with credentials support
+  const allowedOrigins = [
+    'https://dark-luxe-theme-2.vercel.app',
+    'http://localhost:3000',
+  ];
   const origin = req.headers.origin || 'http://localhost:3000';
+  const corsOrigin = allowedOrigins.includes(origin)
+    ? origin
+    : allowedOrigins[0];
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Origin', corsOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
   res.setHeader(
     'Access-Control-Allow-Headers',
