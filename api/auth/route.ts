@@ -70,14 +70,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 async function handleRegister(req: VercelRequest, res: VercelResponse) {
   console.log('=== REGISTER FUNCTION CALLED ===');
-  
+
   if (req.method !== 'POST') {
     console.log('Method not POST:', req.method);
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { email, password, name, role }: RegisterBody = req.body;
-  console.log('Registration data received:', { email, name, role, hasPassword: !!password });
+  console.log('Registration data received:', {
+    email,
+    name,
+    role,
+    hasPassword: !!password,
+  });
 
   if (!email || !password || !role) {
     console.log('Missing required fields');
@@ -91,7 +96,10 @@ async function handleRegister(req: VercelRequest, res: VercelResponse) {
       where: { email },
     });
 
-    console.log('Existing user check:', existingUser ? 'User exists' : 'User does not exist');
+    console.log(
+      'Existing user check:',
+      existingUser ? 'User exists' : 'User does not exist'
+    );
 
     if (existingUser) {
       console.log('User already exists with email:', email);
@@ -138,7 +146,9 @@ async function handleRegister(req: VercelRequest, res: VercelResponse) {
     // Set JWT as HTTP-only cookie
     res.setHeader(
       'Set-Cookie',
-      `token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}`
+      `token=${token}; HttpOnly; Path=/; Max-Age=${
+        7 * 24 * 60 * 60
+      }; SameSite=Lax; Secure=${process.env.NODE_ENV === 'production'}`
     );
 
     console.log('Cookie set, preparing response');
@@ -173,7 +183,7 @@ async function handleRegister(req: VercelRequest, res: VercelResponse) {
         <p>If you did not sign up, please ignore this email.</p>
       `,
     };
-    
+
     transporter.sendMail(mailOptions).catch((err) => {
       console.error('Error sending welcome email:', err);
     });
@@ -184,16 +194,16 @@ async function handleRegister(req: VercelRequest, res: VercelResponse) {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error during registration',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
 
 async function handleLogin(req: VercelRequest, res: VercelResponse) {
   console.log('=== LOGIN FUNCTION CALLED ===');
-  
+
   if (req.method !== 'POST') {
     console.log('Method not POST:', req.method);
     return res.status(405).json({ error: 'Method not allowed' });
@@ -266,9 +276,9 @@ async function handleLogin(req: VercelRequest, res: VercelResponse) {
     });
   } catch (error) {
     console.error('Login error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error during login',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
@@ -280,7 +290,7 @@ async function handleGetCurrentUser(req: VercelRequest, res: VercelResponse) {
 
   // Try to get token from HTTP-only cookie first, then fall back to Authorization header
   let token: string | undefined;
-  
+
   // Parse cookies from the request
   const cookies = req.headers.cookie?.split(';').reduce((acc, cookie) => {
     const [key, value] = cookie.trim().split('=');

@@ -2,18 +2,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
-import { componentTaggerPlugin } from './src/visual-edits/component-tagger-plugin.js';
 
 // Minimal plugin to log build-time and dev-time errors to console
 const logErrorsPlugin = () => ({
   name: 'log-errors-plugin',
-  // Inject a small client-side script that mirrors Vite overlay errors to console
-  transformIndexHtml() {
+  transformIndexHtml(html: string) {
     return {
+      html,
       tags: [
         {
           tag: 'script',
-          injectTo: 'head',
+          injectTo: 'head' as const,
           children: `(() => {
             try {
               const logOverlay = () => {
@@ -24,9 +23,7 @@ const logErrorsPlugin = () => ({
                 try { text = root.textContent || ''; } catch (_) {}
                 if (text && text.trim()) {
                   const msg = text.trim();
-                  // Use console.error to surface clearly in DevTools
                   console.error('[Vite Overlay]', msg);
-                  // Also mirror to parent iframe with structured payload
                   try {
                     if (window.parent && window.parent !== window) {
                       window.parent.postMessage({
@@ -50,7 +47,6 @@ const logErrorsPlugin = () => ({
               obs.observe(document.documentElement, { childList: true, subtree: true });
 
               window.addEventListener('DOMContentLoaded', logOverlay);
-              // Attempt immediately as overlay may already exist
               logOverlay();
             } catch (e) {
               console.warn('[Vite Overlay logger failed]', e);
@@ -63,26 +59,24 @@ const logErrorsPlugin = () => ({
 });
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   server: {
     host: '::',
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'http://localhost:4000',
         changeOrigin: true,
       },
     },
   },
-  plugins: [
-    react(),
-    logErrorsPlugin(),
-    mode === 'development' && componentTaggerPlugin(),
-  ].filter(Boolean),
+  plugins: [react(), logErrorsPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-}));
-// Orchids restart: 1760086899332
+  build: {
+    outDir: 'dist',
+  },
+});
