@@ -52,6 +52,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // Quick runtime guard: if no database URL is configured, return a clear 500
+  const DATABASE_URL =
+    process.env.PRISMA_DATABASE_URL || process.env.DATABASE_URL;
+  if (!DATABASE_URL) {
+    console.error(
+      'Auth API misconfiguration: DATABASE_URL / PRISMA_DATABASE_URL is not set'
+    );
+    return res.status(500).json({
+      error:
+        'Server misconfigured: DATABASE_URL (or PRISMA_DATABASE_URL) is not set',
+      details:
+        'Set your database connection string as the PRISMA_DATABASE_URL or DATABASE_URL environment variable in your deployment platform (for example, Vercel).',
+    });
+  }
+
   try {
     const { action } = req.query;
 
