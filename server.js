@@ -15,9 +15,22 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
+// Allow local dev frontend and deployed Vercel frontend to access the API with credentials
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://dark-luxe-theme-2.vercel.app',
+];
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // If no origin (e.g., same-origin or curl), allow it
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      // Otherwise, block
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   })
 );
