@@ -1,132 +1,141 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
-import { 
-  BookOpen, 
-  Users, 
-  FileText, 
-  Video, 
-  TrendingUp, 
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { withTeacherAuth } from '../components/withAuth';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import {
+  BookOpen,
+  Users,
+  FileText,
+  Video,
+  TrendingUp,
   Clock,
   CheckCircle2,
   AlertCircle,
   Upload,
   GraduationCap,
-  LogOut
-} from "lucide-react";
-import type { Assignment, Submission } from "@/types";
-import { ThemeToggle } from "@/components/ThemeToggle";
+  LogOut,
+} from 'lucide-react';
+import type { Assignment, Submission } from '@/types';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
-  
-  // Redirect if not authenticated or not a teacher
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    } else if (!loading && user && user.role !== 'TEACHER') {
-      // Redirect to appropriate dashboard based on role
-      if (user.role === 'ADMIN') {
-        navigate('/admin/dashboard');
-      } else if (user.role === 'STUDENT') {
-        navigate('/student/dashboard');
-      }
-    }
-  }, [user, loading, navigate]);
-  
-  const currentSession = "2024-2025";
-  const currentTerm = "First Term";
-  
+  const { user, logout } = useAuth();
+
+  const currentSession = '2024-2025';
+  const currentTerm = 'First Term';
+
   const stats = {
     totalStudents: 156,
     activeAssignments: 8,
     pendingGrading: 23,
-    averageClassGrade: 82
+    averageClassGrade: 82,
   };
 
   const myAssignments: Assignment[] = [
     {
-      id: "1",
-      title: "Quadratic Equations Practice",
-      description: "Solve various quadratic equations",
-      subject: "Mathematics",
-      dueDate: "2024-03-20",
+      id: '1',
+      title: 'Quadratic Equations Practice',
+      description: 'Solve various quadratic equations',
+      subject: 'Mathematics',
+      dueDate: '2024-03-20',
       totalPoints: 100,
-      status: "active",
+      status: 'active',
       submissionsCount: 45,
-      gradedCount: 30
+      gradedCount: 30,
     },
     {
-      id: "2",
-      title: "Chemical Bonding Lab Report",
-      description: "Submit lab observations and conclusions",
-      subject: "Chemistry",
-      dueDate: "2024-03-25",
+      id: '2',
+      title: 'Chemical Bonding Lab Report',
+      description: 'Submit lab observations and conclusions',
+      subject: 'Chemistry',
+      dueDate: '2024-03-25',
       totalPoints: 50,
-      status: "active",
+      status: 'active',
       submissionsCount: 38,
-      gradedCount: 38
-    }
+      gradedCount: 38,
+    },
   ];
 
   const pendingSubmissions: Submission[] = [
     {
-      id: "1",
-      assignmentId: "1",
-      assignmentTitle: "Quadratic Equations Practice",
-      studentId: "s1",
-      studentName: "John Doe",
-      submittedAt: "2024-03-15T10:30:00",
-      status: "submitted",
-      files: ["solution.pdf"]
+      id: '1',
+      assignmentId: '1',
+      assignmentTitle: 'Quadratic Equations Practice',
+      studentId: 's1',
+      studentName: 'John Doe',
+      submittedAt: '2024-03-15T10:30:00',
+      status: 'submitted',
+      files: ['solution.pdf'],
     },
     {
-      id: "2",
-      assignmentId: "1",
-      assignmentTitle: "Quadratic Equations Practice",
-      studentId: "s2",
-      studentName: "Jane Smith",
-      submittedAt: "2024-03-16T14:20:00",
-      status: "submitted",
-      files: ["answers.pdf"]
-    }
+      id: '2',
+      assignmentId: '1',
+      assignmentTitle: 'Quadratic Equations Practice',
+      studentId: 's2',
+      studentName: 'Jane Smith',
+      submittedAt: '2024-03-16T14:20:00',
+      status: 'submitted',
+      files: ['answers.pdf'],
+    },
   ];
 
   const recentActivity = [
-    { student: "Emily Wilson", action: "Submitted", assignment: "Physics Lab Report", time: "2 hours ago" },
-    { student: "Michael Brown", action: "Submitted", assignment: "Math Assignment 5", time: "5 hours ago" },
-    { student: "Sarah Davis", action: "Viewed", assignment: "Chemistry Quiz", time: "1 day ago" }
+    {
+      student: 'Emily Wilson',
+      action: 'Submitted',
+      assignment: 'Physics Lab Report',
+      time: '2 hours ago',
+    },
+    {
+      student: 'Michael Brown',
+      action: 'Submitted',
+      assignment: 'Math Assignment 5',
+      time: '5 hours ago',
+    },
+    {
+      student: 'Sarah Davis',
+      action: 'Viewed',
+      assignment: 'Chemistry Quiz',
+      time: '1 day ago',
+    },
   ];
 
+  // Use the logout function from useAuth hook
   const handleLogout = () => {
-    navigate("/auth");
+    logout(); // This will handle the logout and redirect properly
   };
 
   const handleCreateAssignment = () => {
-    navigate("/teacher/create-assignment");
+    navigate('/teacher/create-assignment');
   };
 
   const handleUploadVideo = () => {
-    navigate("/teacher/upload-video");
+    navigate('/teacher/upload-video');
   };
 
   const handleGradeSubmissions = () => {
-    navigate("/teacher/grade-assignments");
+    navigate('/teacher/grade-assignments');
   };
 
   const handleViewStudents = () => {
-    navigate("/teacher/view-students");
+    navigate('/teacher/view-students');
   };
 
   const handleProfileClick = () => {
-    navigate("/profile");
+    navigate('/profile');
   };
 
   return (
@@ -135,7 +144,9 @@ const TeacherDashboard = () => {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Teacher Dashboard</h1>
+            <h1 className="text-2xl font-bold text-foreground">
+              Teacher Dashboard
+            </h1>
             <p className="text-sm text-muted-foreground">
               {currentSession} • {currentTerm}
             </p>
@@ -146,15 +157,23 @@ const TeacherDashboard = () => {
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
-            <Avatar className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
+            <Avatar
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => navigate('/profile')}
+            >
               {user?.avatar ? (
                 <AvatarImage src={user.avatar} />
               ) : (
-                <AvatarFallback>{user?.name?.charAt(0) || user?.email?.charAt(0) || 'T'}</AvatarFallback>
+                <AvatarFallback>
+                  {user?.name?.charAt(0) || user?.email?.charAt(0) || 'T'}
+                </AvatarFallback>
               )}
             </Avatar>
             <div>
-              <p className="font-medium text-foreground cursor-pointer hover:underline" onClick={handleProfileClick}>
+              <p
+                className="font-medium text-foreground cursor-pointer hover:underline"
+                onClick={handleProfileClick}
+              >
                 {user?.name || user?.email || 'Teacher'}
               </p>
               <Badge variant="secondary">Teacher</Badge>
@@ -168,45 +187,63 @@ const TeacherDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Students
+              </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalStudents}</div>
-              <p className="text-xs text-muted-foreground">Across all classes</p>
+              <p className="text-xs text-muted-foreground">
+                Across all classes
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Active Assignments</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Active Assignments
+              </CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.activeAssignments}</div>
+              <div className="text-2xl font-bold">
+                {stats.activeAssignments}
+              </div>
               <p className="text-xs text-muted-foreground">Currently ongoing</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Pending Grading</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Pending Grading
+              </CardTitle>
               <AlertCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.pendingGrading}</div>
-              <p className="text-xs text-muted-foreground">Submissions to grade</p>
+              <p className="text-xs text-muted-foreground">
+                Submissions to grade
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Average Class Grade</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Average Class Grade
+              </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.averageClassGrade}%</div>
-              <p className="text-xs text-muted-foreground">Overall performance</p>
+              <div className="text-2xl font-bold">
+                {stats.averageClassGrade}%
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Overall performance
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -252,7 +289,9 @@ const TeacherDashboard = () => {
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle>{assignment.title}</CardTitle>
-                      <CardDescription>{assignment.description}</CardDescription>
+                      <CardDescription>
+                        {assignment.description}
+                      </CardDescription>
                     </div>
                     <Badge>{assignment.subject}</Badge>
                   </div>
@@ -261,14 +300,6 @@ const TeacherDashboard = () => {
                   <div className="space-y-4">
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span>{assignment.submissionsCount} submissions</span>
-                      </div>
-                      <div className="flex items-center gap-2">
                         <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
                         <span>{assignment.gradedCount} graded</span>
                       </div>
@@ -276,14 +307,31 @@ const TeacherDashboard = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span>Grading Progress</span>
-                        <span>{Math.round((assignment.gradedCount! / assignment.submissionsCount!) * 100)}%</span>
+                        <span>
+                          {Math.round(
+                            (assignment.gradedCount! /
+                              assignment.submissionsCount!) *
+                              100
+                          )}
+                          %
+                        </span>
                       </div>
-                      <Progress value={(assignment.gradedCount! / assignment.submissionsCount!) * 100} />
+                      <Progress
+                        value={
+                          (assignment.gradedCount! /
+                            assignment.submissionsCount!) *
+                          100
+                        }
+                      />
                     </div>
                     <div className="flex gap-2">
                       <Button size="sm">View Details</Button>
-                      <Button size="sm" variant="outline">Edit</Button>
-                      <Button size="sm" variant="outline">Grade Submissions</Button>
+                      <Button size="sm" variant="outline">
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Grade Submissions
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -297,8 +345,12 @@ const TeacherDashboard = () => {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-lg">{submission.studentName}</CardTitle>
-                      <CardDescription>{submission.assignmentTitle}</CardDescription>
+                      <CardTitle className="text-lg">
+                        {submission.studentName}
+                      </CardTitle>
+                      <CardDescription>
+                        {submission.assignmentTitle}
+                      </CardDescription>
                     </div>
                     <Badge variant="secondary">{submission.status}</Badge>
                   </div>
@@ -307,7 +359,12 @@ const TeacherDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="h-4 w-4" />
-                      <span>Submitted {submission.submittedAt ? new Date(submission.submittedAt).toLocaleString() : 'N/A'}</span>
+                      <span>
+                        Submitted{' '}
+                        {submission.submittedAt
+                          ? new Date(submission.submittedAt).toLocaleString()
+                          : 'N/A'}
+                      </span>
                     </div>
                     <Button size="sm">
                       <CheckCircle2 className="mr-2 h-4 w-4" />
@@ -323,10 +380,14 @@ const TeacherDashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle>My Students</CardTitle>
-                <CardDescription>Manage and view student progress</CardDescription>
+                <CardDescription>
+                  Manage and view student progress
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Student list will be populated from Vercel PostgreSQL backend</p>
+                <p className="text-muted-foreground">
+                  Student list will be populated from Vercel PostgreSQL backend
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -340,10 +401,18 @@ const TeacherDashboard = () => {
               <CardContent>
                 <div className="space-y-4">
                   {recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-center justify-between border-b border-border pb-4 last:border-0">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between border-b border-border pb-4 last:border-0"
+                    >
                       <div className="flex items-center gap-4">
                         <Avatar>
-                          <AvatarFallback>{activity.student.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                          <AvatarFallback>
+                            {activity.student
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
                           <p className="font-medium">{activity.student}</p>
@@ -352,7 +421,9 @@ const TeacherDashboard = () => {
                           </p>
                         </div>
                       </div>
-                      <span className="text-sm text-muted-foreground">{activity.time}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {activity.time}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -365,4 +436,4 @@ const TeacherDashboard = () => {
   );
 };
 
-export default TeacherDashboard;
+export default withTeacherAuth(TeacherDashboard);
