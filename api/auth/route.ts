@@ -206,13 +206,14 @@ async function handleRegister(req: VercelRequest, res: VercelResponse) {
       `,
     };
 
-    transporter.sendMail(mailOptions).catch((err) => {
-      console.error('Error sending welcome email:', err);
+    transporter.sendMail(mailOptions).catch((error: Error) => {
+      console.error('Error sending welcome email:', error.message);
     });
 
     console.log('Registration complete, sending response');
     return res.status(201).json({
       user,
+      token, // Include token in response for frontend access
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -279,10 +280,12 @@ async function handleLogin(req: VercelRequest, res: VercelResponse) {
       { expiresIn: '7d' }
     );
 
-    // Set JWT as HTTP-only cookie
+    // Set JWT as HTTP-only cookie with proper settings for cross-origin
     res.setHeader(
       'Set-Cookie',
-      `token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}`
+      `token=${token}; HttpOnly; Path=/; Max-Age=${
+        7 * 24 * 60 * 60
+      }; SameSite=Lax; Secure=${process.env.NODE_ENV === 'production'}`
     );
 
     console.log('Login successful for user:', user.email);
@@ -295,6 +298,7 @@ async function handleLogin(req: VercelRequest, res: VercelResponse) {
         role: user.role,
         avatar: user.avatar,
       },
+      token, // Include token in response for frontend access
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -404,6 +408,14 @@ async function handleGoogleAuth(req: VercelRequest, res: VercelResponse) {
     { expiresIn: '7d' }
   );
 
+  // Set JWT as HTTP-only cookie for Google auth as well
+  res.setHeader(
+    'Set-Cookie',
+    `token=${token}; HttpOnly; Path=/; Max-Age=${
+      7 * 24 * 60 * 60
+    }; SameSite=Lax; Secure=${process.env.NODE_ENV === 'production'}`
+  );
+
   return res.status(200).json({
     user: {
       id: user.id,
@@ -412,6 +424,6 @@ async function handleGoogleAuth(req: VercelRequest, res: VercelResponse) {
       role: user.role,
       avatar: user.avatar,
     },
-    token,
+    token, // Include token in response for frontend access
   });
 }
