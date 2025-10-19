@@ -59,7 +59,7 @@ apiClient.interceptors.response.use(
       // Token is invalid or expired
       tokenManager.removeToken();
       if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+        window.location.href = '/auth';
       }
     }
     return Promise.reject(error);
@@ -130,7 +130,7 @@ export const authAPI = {
   logout: () => {
     tokenManager.removeToken();
     if (typeof window !== 'undefined') {
-      window.location.href = '/login';
+      window.location.href = '/auth';
     }
   },
 
