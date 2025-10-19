@@ -34,6 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const allowedOrigins = [
     'https://dark-luxe-theme-2.vercel.app',
     'http://localhost:3000',
+    'http://localhost:5173',
   ];
   const origin = req.headers.origin || 'http://localhost:3000';
   const corsOrigin = allowedOrigins.includes(origin)
@@ -79,6 +80,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return await handleGetCurrentUser(req, res);
       case 'google':
         return await handleGoogleAuth(req, res);
+      case 'logout':
+        return await handleLogout(req, res);
       default:
         return res.status(400).json({ error: 'Invalid action' });
     }
@@ -426,4 +429,18 @@ async function handleGoogleAuth(req: VercelRequest, res: VercelResponse) {
     },
     token, // Include token in response for frontend access
   });
+}
+
+async function handleLogout(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Clear JWT cookie
+  res.setHeader(
+    'Set-Cookie',
+    `token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax; Secure=${process.env.NODE_ENV === 'production'}`
+  );
+
+  return res.status(200).json({ message: 'Logged out' });
 }

@@ -131,10 +131,16 @@ export const authAPI = {
     }
   },
 
-  logout: () => {
-    tokenManager.removeToken();
-    if (typeof window !== 'undefined') {
-      window.location.href = '/auth';
+  logout: async () => {
+    try {
+      await apiClient.post('/auth?action=logout');
+    } catch (e) {
+      // ignore network errors on logout
+    } finally {
+      tokenManager.removeToken();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth?from=protected';
+      }
     }
   },
 

@@ -247,6 +247,9 @@ function StudentDashboard() {
             <Button variant="outline" onClick={() => navigate('/profile')}>
               View Profile
             </Button>
+            <Button variant="destructive" onClick={logout}>
+              Logout
+            </Button>
           </div>
         </div>
       </header>

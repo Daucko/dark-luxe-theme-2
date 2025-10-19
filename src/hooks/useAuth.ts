@@ -31,18 +31,8 @@ export const useAuth = () => {
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        setAuthState({ user: null, loading: false, isAuthenticated: false });
-        return;
-      }
-
       const response = await fetch('/api/auth?action=me', {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         credentials: 'include',
       });
 
@@ -103,10 +93,19 @@ export const useAuth = () => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('auth_token');
-    setAuthState({ user: null, loading: false, isAuthenticated: false });
-    window.location.href = '/auth';
+  const logout = async () => {
+    try {
+      await fetch('/api/auth?action=logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (e) {
+      // ignore network errors on logout
+    } finally {
+      localStorage.removeItem('auth_token');
+      setAuthState({ user: null, loading: false, isAuthenticated: false });
+      window.location.href = '/auth?from=protected';
+    }
   };
 
   const hasRole = (roles: string | string[]): boolean => {
