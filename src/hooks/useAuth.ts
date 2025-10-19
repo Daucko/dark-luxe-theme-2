@@ -106,7 +106,7 @@ export const useAuth = () => {
   const logout = () => {
     localStorage.removeItem('auth_token');
     setAuthState({ user: null, loading: false, isAuthenticated: false });
-    window.location.href = '/login';
+    window.location.href = '/auth';
   };
 
   const hasRole = (roles: string | string[]): boolean => {

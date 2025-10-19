@@ -586,4 +586,4 @@ function StudentDashboard() {
   );
 }
 
-export default withStudentAuth(StudentDashboard);
+export default StudentDashboard;

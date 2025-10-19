@@ -59,7 +59,11 @@ apiClient.interceptors.response.use(
       // Token is invalid or expired
       tokenManager.removeToken();
       if (typeof window !== 'undefined') {
-        window.location.href = '/auth';
+        const current = window.location.pathname + window.location.search;
+        // Avoid redirect loops if already on the auth page
+        if (!current.startsWith('/auth')) {
+          window.location.href = '/auth?from=protected';
+        }
       }
     }
     return Promise.reject(error);

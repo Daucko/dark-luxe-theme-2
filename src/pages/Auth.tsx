@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,8 @@ import axios from 'axios';
 const Auth = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const skipForward = new URLSearchParams(location.search).get('from') === 'protected';
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +38,22 @@ const Auth = () => {
       navigate('/student/dashboard');
     }
   };
+
+  // Auto-forward if already authenticated (mount-time check)
+  useEffect(() => {
+    if (skipForward) return;
+    axios
+      .get('/api/auth?action=me', { withCredentials: true })
+      .then((res) => {
+        const role = res?.data?.user?.role as 'ADMIN' | 'TEACHER' | 'STUDENT' | undefined;
+        if (role) {
+          routeByRole(role);
+        }
+      })
+      .catch(() => {
+        // Not authenticated; remain on the /auth page
+      });
+  }, [skipForward]);
 
   // Extract a readable error message from various error shapes
   const extractErrorMessage = (err: unknown) => {

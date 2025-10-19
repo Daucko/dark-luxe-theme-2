@@ -41,7 +41,7 @@ export default function ProtectedRoute({
             'You must be logged in with the correct role to access the dashboard.',
           variant: 'destructive',
         });
-        setRedirect('/auth');
+        setRedirect('/auth?from=protected');
         return;
       }
       if (path.startsWith('/admin/dashboard') && user.role !== 'ADMIN') {
@@ -51,7 +51,13 @@ export default function ProtectedRoute({
             'You must be logged in with the correct role to access the dashboard.',
           variant: 'destructive',
         });
-        setRedirect('/auth');
+        setRedirect(
+          user.role === 'ADMIN'
+            ? '/admin/dashboard'
+            : user.role === 'TEACHER'
+            ? '/teacher/dashboard'
+            : '/student/dashboard'
+        );
         return;
       }
       if (path.startsWith('/teacher/dashboard') && user.role !== 'TEACHER') {
@@ -61,7 +67,13 @@ export default function ProtectedRoute({
             'You must be logged in with the correct role to access the dashboard.',
           variant: 'destructive',
         });
-        setRedirect('/auth');
+        setRedirect(
+          user.role === 'ADMIN'
+            ? '/admin/dashboard'
+            : user.role === 'TEACHER'
+            ? '/teacher/dashboard'
+            : '/student/dashboard'
+        );
         return;
       }
       if (path.startsWith('/student/dashboard') && user.role !== 'STUDENT') {
@@ -71,7 +83,13 @@ export default function ProtectedRoute({
             'You must be logged in with the correct role to access the dashboard.',
           variant: 'destructive',
         });
-        setRedirect('/auth');
+        setRedirect(
+          user.role === 'ADMIN'
+            ? '/admin/dashboard'
+            : user.role === 'TEACHER'
+            ? '/teacher/dashboard'
+            : '/student/dashboard'
+        );
         return;
       }
     }
