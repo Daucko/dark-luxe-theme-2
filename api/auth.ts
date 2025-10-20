@@ -1,3 +1,6 @@
+// Shim: re-export handler from ./auth/route.ts so Vercel's import path /api/auth resolves correctly
+export { default } from './auth/route';
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PrismaClient } from '@prisma/client';
 import { withAccelerate } from '@prisma/extension-accelerate';
