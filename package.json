@@ -9,6 +9,7 @@
     "dev:api": "tsx server.js",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "prisma:generate-prod": "prisma generate --no-engine",
     "vercel-dev": "vercel dev"
   },
   "dependencies": {
