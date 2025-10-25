@@ -14,12 +14,14 @@ import { Mail } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
+import { MagicCard } from '@/components/ui/magic-card';
 
 const Auth = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const skipForward = new URLSearchParams(location.search).get('from') === 'protected';
+  const skipForward =
+    new URLSearchParams(location.search).get('from') === 'protected';
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,7 +47,11 @@ const Auth = () => {
     axios
       .get('/api/auth?action=me', { withCredentials: true })
       .then((res) => {
-        const role = res?.data?.user?.role as 'ADMIN' | 'TEACHER' | 'STUDENT' | undefined;
+        const role = res?.data?.user?.role as
+          | 'ADMIN'
+          | 'TEACHER'
+          | 'STUDENT'
+          | undefined;
         if (role) {
           routeByRole(role);
         }
@@ -176,15 +182,19 @@ const Auth = () => {
         'https://ui-avatars.com/api/?name=' + encodeURIComponent(googleName);
 
       // TODO: Replace with real OAuth flow and a dedicated endpoint, e.g., /api/auth/google
-      const response = await axios.post('/api/auth?action=google', {
-        googleId,
-        email: emailTrimmed,
-        name: googleName,
-        avatar: googleAvatar,
-        role,
-      }, {
-        withCredentials: true, // Ensure cookies are sent/received
-      });
+      const response = await axios.post(
+        '/api/auth?action=google',
+        {
+          googleId,
+          email: emailTrimmed,
+          name: googleName,
+          avatar: googleAvatar,
+          role,
+        },
+        {
+          withCredentials: true, // Ensure cookies are sent/received
+        }
+      );
       const data = response.data;
 
       postAuthSuccess(data);
@@ -209,152 +219,154 @@ const Auth = () => {
       <div className="absolute top-6 right-6">
         <ThemeToggle />
       </div>
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">
-            {isSignUp ? 'Create an account' : 'Welcome back'}
-          </CardTitle>
-          <CardDescription>
-            {isSignUp
-              ? 'Enter your details to create your account'
-              : 'Enter your credentials to access your account'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Sign in as</Label>
-            <div className="grid grid-cols-3 gap-2">
-              <Button
-                type="button"
-                variant={role === 'STUDENT' ? 'default' : 'outline'}
-                aria-pressed={role === 'STUDENT'}
-                disabled={isSubmitting}
-                onClick={() => setRole('STUDENT')}
-                className="w-full"
-              >
-                Student
-              </Button>
-              <Button
-                type="button"
-                variant={role === 'TEACHER' ? 'default' : 'outline'}
-                aria-pressed={role === 'TEACHER'}
-                disabled={isSubmitting}
-                onClick={() => setRole('TEACHER')}
-                className="w-full"
-              >
-                Teacher
-              </Button>
-              {!isSignUp && (
+      <MagicCard>
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold">
+              {isSignUp ? 'Create an account' : 'Welcome back'}
+            </CardTitle>
+            <CardDescription>
+              {isSignUp
+                ? 'Enter your details to create your account'
+                : 'Enter your credentials to access your account'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Sign in as</Label>
+              <div className="grid grid-cols-3 gap-2">
                 <Button
                   type="button"
-                  variant={role === 'ADMIN' ? 'default' : 'outline'}
-                  aria-pressed={role === 'ADMIN'}
+                  variant={role === 'STUDENT' ? 'default' : 'outline'}
+                  aria-pressed={role === 'STUDENT'}
                   disabled={isSubmitting}
-                  onClick={() => setRole('ADMIN')}
+                  onClick={() => setRole('STUDENT')}
                   className="w-full"
                 >
-                  Admin
+                  Student
                 </Button>
+                <Button
+                  type="button"
+                  variant={role === 'TEACHER' ? 'default' : 'outline'}
+                  aria-pressed={role === 'TEACHER'}
+                  disabled={isSubmitting}
+                  onClick={() => setRole('TEACHER')}
+                  className="w-full"
+                >
+                  Teacher
+                </Button>
+                {!isSignUp && (
+                  <Button
+                    type="button"
+                    variant={role === 'ADMIN' ? 'default' : 'outline'}
+                    aria-pressed={role === 'ADMIN'}
+                    disabled={isSubmitting}
+                    onClick={() => setRole('ADMIN')}
+                    className="w-full"
+                  >
+                    Admin
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleSignIn}
+              disabled={isSubmitting}
+            >
+              <Mail className="mr-2 h-4 w-4" />
+              Continue with <span style={{ color: '#4285F4' }}>G</span>
+              <span style={{ color: '#EA4335' }}>o</span>
+              <span style={{ color: '#FBBC04' }}>o</span>
+              <span style={{ color: '#4285F4' }}>g</span>
+              <span style={{ color: '#34A853' }}>l</span>
+              <span style={{ color: '#EA4335' }}>e</span>
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Your full name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
               )}
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleSignIn}
-            disabled={isSubmitting}
-          >
-            <Mail className="mr-2 h-4 w-4" />
-            Continue with <span style={{ color: '#4285F4' }}>G</span>
-            <span style={{ color: '#EA4335' }}>o</span>
-            <span style={{ color: '#FBBC04' }}>o</span>
-            <span style={{ color: '#4285F4' }}>g</span>
-            <span style={{ color: '#34A853' }}>l</span>
-            <span style={{ color: '#EA4335' }}>e</span>
-          </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                Or continue with email
-              </span>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="name"
-                  type="text"
-                  placeholder="Your full name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  id="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Label htmlFor="password">Password</Label>
                 <Input
-                  id="confirm-password"
+                  id="password"
                   type="password"
                   placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
-            )}
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSignUp ? 'Sign up' : 'Sign in'}
-            </Button>
-          </form>
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
 
-          <div className="text-center text-sm">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-primary hover:underline"
-            >
-              {isSignUp
-                ? 'Already have an account? Sign in'
-                : "Don't have an account? Sign up"}
-            </button>
-          </div>
-        </CardContent>
-      </Card>
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSignUp ? 'Sign up' : 'Sign in'}
+              </Button>
+            </form>
+
+            <div className="text-center text-sm">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-primary hover:underline"
+              >
+                {isSignUp
+                  ? 'Already have an account? Sign in'
+                  : "Don't have an account? Sign up"}
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </MagicCard>
     </div>
   );
 };
