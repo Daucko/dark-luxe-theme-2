@@ -6,9 +6,10 @@ import { Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
-import { cn } from '../lib/utils';
-import { ShineBorder } from '../components/ui/shine-border';
-// import { MagicCard } from '../components/ui/magic-card';
+import { cn } from '@/lib/utils';
+import { ShineBorder } from '@/components/ui/shine-border';
+import Footer from '@/components/Footer';
+import LOGO from '@/assets/LearnSync-logo-transparent.png';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -27,12 +28,11 @@ const Index = () => {
       description:
         'Access and submit assignments with ease, utilizing a user-friendly interface and real-time feedback',
     },
-
     {
       id: '3',
       role: 'For Admins',
       description:
-        ' Monitor performance, manage users, and gain insights with real-time analytics',
+        'Monitor performance, manage users, and gain insights with real-time analytics',
     },
   ];
 
@@ -40,7 +40,8 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="container mx-auto px-6 py-6 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">eduassign</h1>
+        <img src={LOGO} alt="LearnSync Logo" className="size-28" />
+
         <div className="flex items-center gap-3">
           {/* Desktop/Tablet Portal Buttons - hidden on mobile */}
           <Button
@@ -102,7 +103,8 @@ const Index = () => {
           </Sheet>
         </div>
       </header>
-      <main>
+
+      <main className="relative">
         <AnimatedGridPattern
           numSquares={30}
           maxOpacity={0.1}
@@ -110,17 +112,17 @@ const Index = () => {
           repeatDelay={1}
           className={cn(
             '[mask-image:radial-gradient(500px_circle_at_center,white,transparent)]',
-            'inset-x-0 inset-y-[-30%] h-[200%] skew-y-12'
+            'inset-x-0 inset-y-[-55%] h-[200%] skew-y-12 absolute'
           )}
         />
 
         {/* Hero Section */}
-        <section className="flex min-h-[calc(100dvh-4rem)] flex-1 flex-col justify-between gap-12 overflow-x-hidden pt-8 sm:gap-16 sm:pt-16 lg:gap-24 lg:pt-24">
+        <section className="flex min-h-[calc(100dvh-4rem)] flex-1 flex-col justify-between gap-12 overflow-x-hidden pt-8 sm:gap-16 sm:pt-16 lg:gap-24 lg:pt-24 relative z-10">
           {/* Hero Content */}
           <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 px-4 text-center sm:px-6 lg:px-8">
             <div className="bg-muted flex items-center gap-2.5 rounded-full border px-3 py-2">
               <Badge className="rounded-full">Web-Powered</Badge>
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground text-sm">
                 Business Client Portal Solution
               </span>
             </div>
@@ -162,65 +164,46 @@ const Index = () => {
               & Tutorial Platform
             </h1>
 
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground max-w-2xl text-lg">
               An educational platform for tutors to share assignments and
               tutorials, with seamless student submission.
               <br />
               Features real-time analytics and progress tracking for all users.
             </p>
 
-            {/* <Button size="lg" asChild>
-            <a href="#">Try It Now</a>
-          </Button> */}
-            <Button size="lg" className="" onClick={() => navigate('/auth')}>
+            <Button
+              size="lg"
+              className="px-8 py-3 text-lg"
+              onClick={() => navigate('/auth')}
+            >
               Get Started
             </Button>
           </div>
-
-          {/* Image */}
-          {/* <img
-          src="https://cdn.shadcnstudio.com/ss-assets/blocks/marketing/hero/image-19.png"
-          alt="Dishes"
-          className="min-h-67 w-full object-cover"
-        /> */}
         </section>
-        {/* Features Section */}
-        {/* <div className="mt-20 grid md:grid-cols-3 gap-8">
-          <div className="p-8 rounded-2xl bg-card border border-border">
-            <h3 className="text-xl font-semibold mb-3">For Teachers</h3>
-            <p className="text-muted-foreground">
-              Create, distribute, and grade assignments effortlessly with
-              integrated multimedia support
-            </p>
-          </div>
-          <div className="p-8 rounded-2xl bg-card border border-border">
-            <h3 className="text-xl font-semibold mb-3">For Students</h3>
-            <p className="text-muted-foreground">
-              Access all assignments, submit work, and track progress in one
-              unified platform
-            </p>
-          </div>
-          <div className="p-8 rounded-2xl bg-card border border-border">
-            <h3 className="text-xl font-semibold mb-3">For Admins</h3>
-            <p className="text-muted-foreground">
-              Monitor performance, manage users, and gain insights with
-              real-time analytics
-            </p>
-          </div>
-        </div> */}
 
-        <div className="px-6 mt-10 grid md:grid-cols-3 gap-8">
-          {boxes?.map((box, index) => {
-            return (
-              <div className="relative w-full max-w-[350px] overflow-hidden p-8 rounded-2xl bg-card">
-                <ShineBorder shineColor={['#A07CFE', '#FE8FB5', '#FFBE7B']} />
-                <h3 className="text-xl font-semibold mb-3">{box?.role}</h3>
-                <p className="text-muted-foreground">{box?.description}</p>
-              </div>
-            );
-          })}
+        {/* Features Section */}
+        <div className="px-6 my-40 grid md:grid-cols-3 gap-8 max-w-7xl mx-auto relative z-10">
+          {boxes.map((box, index) => (
+            <div
+              key={box.id}
+              className="relative w-full overflow-hidden p-8 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow"
+            >
+              <ShineBorder
+                shineColor={['#A07CFE', '#FE8FB5', '#FFBE7B']}
+                className="rounded-2xl"
+              />
+              <h3 className="text-xl font-semibold mb-3 text-foreground">
+                {box.role}
+              </h3>
+              <p className="text-muted-foreground leading-relaxed">
+                {box.description}
+              </p>
+            </div>
+          ))}
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };
