@@ -39,7 +39,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="container mx-auto px-6 py-6 flex items-center justify-between">
+      <header className="container mx-auto px-8 py-6 flex items-center justify-between">
         <img src={LOGO} alt="LearnSync Logo" className="size-28" />
 
         <div className="flex items-center gap-3">
