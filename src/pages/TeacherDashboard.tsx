@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { withTeacherAuth } from '../components/withAuth';
@@ -29,8 +29,10 @@ import {
 } from 'lucide-react';
 import type { Assignment, Submission } from '@/types';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import axios from 'axios';
 
 const TeacherDashboard = () => {
+  const [myAssignments, setMyAssignments] = useState<Assignment[]>([]);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -44,30 +46,48 @@ const TeacherDashboard = () => {
     averageClassGrade: 82,
   };
 
-  const myAssignments: Assignment[] = [
-    {
-      id: '1',
-      title: 'Quadratic Equations Practice',
-      description: 'Solve various quadratic equations',
-      subject: 'Mathematics',
-      dueDate: '2024-03-20',
-      totalPoints: 100,
-      status: 'active',
-      submissionsCount: 45,
-      gradedCount: 30,
-    },
-    {
-      id: '2',
-      title: 'Chemical Bonding Lab Report',
-      description: 'Submit lab observations and conclusions',
-      subject: 'Chemistry',
-      dueDate: '2024-03-25',
-      totalPoints: 50,
-      status: 'active',
-      submissionsCount: 38,
-      gradedCount: 38,
-    },
-  ];
+  // const myAssignments: Assignment[] = [
+  //   {
+  //     id: '1',
+  //     title: 'Quadratic Equations Practice',
+  //     description: 'Solve various quadratic equations',
+  //     subject: 'Mathematics',
+  //     dueDate: '2024-03-20',
+  //     totalPoints: 100,
+  //     status: 'active',
+  //     submissionsCount: 45,
+  //     gradedCount: 30,
+  //   },
+  //   {
+  //     id: '2',
+  //     title: 'Chemical Bonding Lab Report',
+  //     description: 'Submit lab observations and conclusions',
+  //     subject: 'Chemistry',
+  //     dueDate: '2024-03-25',
+  //     totalPoints: 50,
+  //     status: 'active',
+  //     submissionsCount: 38,
+  //     gradedCount: 38,
+  //   },
+  // ];
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const response = await axios.get('/api/assignments', {
+          withCredentials: true, // Ensure cookies are sent for authentication
+        });
+        setMyAssignments(response.data.assignments);
+      } catch (error) {
+        console.error('Error fetching assignments:', error);
+        if (error.response?.status === 401) {
+          navigate('/auth'); // Redirect to login if unauthorized
+        }
+      }
+    };
+
+    fetchAssignments();
+  }, [navigate]);
 
   const pendingSubmissions: Submission[] = [
     {

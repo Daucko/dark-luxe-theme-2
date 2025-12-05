@@ -41,9 +41,9 @@ const Auth = () => {
     }
   };
 
-  // Auto-forward if already authenticated (mount-time check)
   useEffect(() => {
     if (skipForward) return;
+
     axios
       .get('/api/auth?action=me', { withCredentials: true })
       .then((res) => {
@@ -53,13 +53,33 @@ const Auth = () => {
           | 'STUDENT'
           | undefined;
         if (role) {
-          routeByRole(role);
+          // Only redirect if we're not already on the correct dashboard
+          const currentPath = window.location.pathname;
+          const targetPath = getDashboardPath(role);
+
+          if (currentPath !== targetPath) {
+            navigate(targetPath);
+          }
         }
       })
       .catch(() => {
         // Not authenticated; remain on the /auth page
       });
-  }, [skipForward]);
+  }, [skipForward, navigate]);
+
+  // Add this helper function
+  const getDashboardPath = (role: string): string => {
+    switch (role) {
+      case 'ADMIN':
+        return '/admin/dashboard';
+      case 'TEACHER':
+        return '/teacher/dashboard';
+      case 'STUDENT':
+        return '/student/dashboard';
+      default:
+        return '/dashboard';
+    }
+  };
 
   // Extract a readable error message from various error shapes
   const extractErrorMessage = (err: unknown) => {

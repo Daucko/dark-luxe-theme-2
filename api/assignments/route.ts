@@ -31,11 +31,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // Authenticate user
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    let token: string | undefined;
+
+    // Try to get token from cookie first
+    const cookies = req.headers.cookie?.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    token = cookies?.token;
+
+    // Fallback to Authorization header
+    if (!token && authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+
+    if (!token) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const token = authHeader.substring(7);
     const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
 
     switch (req.method) {
